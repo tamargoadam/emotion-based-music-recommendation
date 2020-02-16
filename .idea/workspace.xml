@@ -1,16 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="d8467f80-e920-4e08-9efc-e63de48c52fa" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/emotion-based-music-recommendation.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/endpoints/spotify_credentials.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/endpoints/spotify_search.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/twitter_credentials.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/endpoints/twitter_credentials.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/twitter_popularsearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/server/endpoints/twitter_popularsearch.py" afterDir="false" />
-    </list>
+    <list default="true" id="d8467f80-e920-4e08-9efc-e63de48c52fa" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,8 +13,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/server/endpoints/twitter_popularsearch.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="6" selection-start-line="6" selection-end-line="7" selection-end-column="27" />
+            <state relative-caret-position="187">
+              <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
               <folding>
                 <element signature="e#27#54#0" expanded="true" />
               </folding>
@@ -35,7 +26,7 @@
         <entry file="file://$PROJECT_DIR$/server/endpoints/spotify_search.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="85">
-              <caret line="5" column="43" lean-forward="true" selection-start-line="5" selection-start-column="43" selection-end-line="5" selection-end-column="43" />
+              <caret line="5" column="43" selection-start-line="5" selection-start-column="43" selection-end-line="5" selection-end-column="43" />
               <folding>
                 <element signature="e#0#51#0" expanded="true" />
               </folding>
@@ -190,11 +181,11 @@
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Version Control" />
       <window_info anchor="bottom" id="Python Console" />
-      <window_info anchor="bottom" id="Terminal" weight="0.3294702" />
+      <window_info active="true" anchor="bottom" id="Terminal" visible="true" weight="0.3294702" />
       <window_info anchor="bottom" id="Event Log" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3294702" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.3294702" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -222,7 +213,7 @@
     <entry file="file://$PROJECT_DIR$/server/endpoints/spotify_search.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="85">
-          <caret line="5" column="43" lean-forward="true" selection-start-line="5" selection-start-column="43" selection-end-line="5" selection-end-column="43" />
+          <caret line="5" column="43" selection-start-line="5" selection-start-column="43" selection-end-line="5" selection-end-column="43" />
           <folding>
             <element signature="e#0#51#0" expanded="true" />
           </folding>
@@ -231,8 +222,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/server/endpoints/twitter_popularsearch.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" selection-start-line="6" selection-end-line="7" selection-end-column="27" />
+        <state relative-caret-position="187">
+          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
           <folding>
             <element signature="e#27#54#0" expanded="true" />
           </folding>
