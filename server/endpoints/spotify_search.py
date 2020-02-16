@@ -1,15 +1,21 @@
-from spotipy.oauth2 import SpotifyClientCredentials
-import spotipy
 import json
-import pprint
+from endpoints.spotify_helpers import *
 
-search_str = input("Enter search string: ")
+username = input("Enter username: ")
+scope = 'user-library-read user-top-read playlist-modify-public user-follow-read'
+redirect_url = 'https://localhost:8000'
 
 with open("spotify_credentials.json", "r") as file:
     creds = json.load(file)
 
-client_credentials_manager = SpotifyClientCredentials(client_id=creds['CLIENT_ID'], client_secret=creds['CLIENT_SECRET'])
-sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+token = spotipy.util.prompt_for_user_token(username, scope, creds['CLIENT_ID'], creds['CLIENT_SECRET'], redirect_url)
 
-result = sp.search(search_str)
-pprint.pprint(result)
+if token:
+    print("made it")
+    sp = authenticate_spotify(token)
+    results = sp.current_user_saved_tracks()
+    for item in results['items']:
+        track = item['track']
+        print(track['name'] + ' - ' + track['artists'][0]['name'])
+else:
+    print("Can't get token for ", username)
