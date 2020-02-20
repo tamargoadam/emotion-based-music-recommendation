@@ -65,3 +65,15 @@ def get_artists_top_tracks(sp: spotipy.Spotify, artists_uri, amount: int = 50):
 def get_emo_tracks(sp: spotipy.Spotify, top_tracks_uri, emotion):
     """compile subset of top_tracks_uri that compliment indicated emotion"""
     return 0
+
+
+def create_playlist(sp: spotipy.Spotify, tracks_uri, playlist_name: str, amount: int = 0):
+    """creates a playlist or tracks from tracks_uri on the users account of length amount"""
+    print('...creating playlist')
+    if amount == 0:
+        amount = len(tracks_uri)
+    user_id = sp.current_user()["id"]
+    playlist_id = sp.user_playlist_create(user_id, playlist_name)["id"]
+    random.shuffle(tracks_uri)
+    sp.user_playlist_add_tracks(user_id, playlist_id, tracks_uri[0:amount])
+    print('playlist, {}, has been generated.'.format(playlist_name))

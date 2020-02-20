@@ -13,9 +13,10 @@ token = spotipy.util.prompt_for_user_token(username, scope, creds['CLIENT_ID'], 
 if token:
     sp = authenticate_spotify(token)
     results = get_artists_top_tracks(sp, get_top_and_similar_artists(sp))
-    print('\nTOP TRACKS\n')
+    """print('\nTOP TRACKS\n')
     for uri in results:
         track = sp.track(uri)
-        print(track['name'])
+        print(track['name'])"""
+    create_playlist(sp, results, "TEST")
 else:
     print("Can't get token for ", username)
