@@ -2,7 +2,7 @@ import spotipy
 import random
 
 
-def authenticate_spotify(token):
+def authenticate_spotify(token: str):
     """authenticates Spotify account via the passed in token"""
     print('...connecting to Spotify')
     sp = spotipy.Spotify(auth=token)
@@ -48,7 +48,7 @@ def get_top_and_similar_artists(sp: spotipy.Spotify, amount: int = 20):
     return artists_uri
 
 
-def get_artists_top_tracks(sp: spotipy.Spotify, artists_uri, amount: int = 50):
+def get_artists_top_tracks(sp: spotipy.Spotify, artists_uri: list, amount: int = 50):
     """compiles unordered list of top tracks made by artists in artists_uri of length amount"""
     print('...getting top tracks for each artist')
     tracks_uri = []
@@ -62,12 +62,12 @@ def get_artists_top_tracks(sp: spotipy.Spotify, artists_uri, amount: int = 50):
     return tracks_uri
 
 
-def get_emo_tracks(sp: spotipy.Spotify, top_tracks_uri, emotion):
+def get_emo_tracks(sp: spotipy.Spotify, top_tracks_uri: list, emotion: list):
     """compile subset of top_tracks_uri that compliment indicated emotion"""
     return 0
 
 
-def create_playlist(sp: spotipy.Spotify, tracks_uri, playlist_name: str, amount: int = 0):
+def create_playlist(sp: spotipy.Spotify, tracks_uri: list, playlist_name: str, amount: int = 0):
     """creates a playlist or tracks from tracks_uri on the users account of length amount"""
     print('...creating playlist')
     if amount == 0:
