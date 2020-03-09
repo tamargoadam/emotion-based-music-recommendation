@@ -1,5 +1,14 @@
 import spotipy
 import random
+import json
+
+
+def get_user_token(username: str, scope: str, redirect_uri: str):
+    """get token for specified user via credentials"""
+    with open("./spotify/spotify_credentials.json", "r") as file:
+        creds = json.load(file)
+    return spotipy.util.prompt_for_user_token(username, scope, creds['CLIENT_ID'], creds['CLIENT_SECRET'],
+                                              redirect_uri)
 
 
 def authenticate_spotify(token: str):
@@ -64,7 +73,7 @@ def get_artists_top_tracks(sp: spotipy.Spotify, artists_uri: list, amount: int =
 
 def get_emo_tracks(sp: spotipy.Spotify, top_tracks_uri: list, emotion: list):
     """compile subset of top_tracks_uri that compliment indicated emotion"""
-    return 0
+    return
 
 
 def create_playlist(sp: spotipy.Spotify, tracks_uri: list, playlist_name: str, amount: int = 0):
@@ -77,3 +86,21 @@ def create_playlist(sp: spotipy.Spotify, tracks_uri: list, playlist_name: str, a
     random.shuffle(tracks_uri)
     sp.user_playlist_add_tracks(user_id, playlist_id, tracks_uri[0:amount])
     print('playlist, {}, has been generated.'.format(playlist_name))
+
+
+username = input("Enter username: ")
+scope = 'user-library-read user-top-read playlist-modify-public user-follow-read'
+redirect_uri = 'https://localhost:8000/callback'
+
+token = get_user_token(username, scope, redirect_uri)
+
+if token:
+    sp = authenticate_spotify(token)
+    results = get_artists_top_tracks(sp, get_top_and_similar_artists(sp))
+    """print('\nTOP TRACKS\n')
+    for uri in results:
+        track = sp.track(uri)
+        print(track['name'])"""
+    create_playlist(sp, results, "TEST")
+else:
+    print("Can't get token for ", username)
