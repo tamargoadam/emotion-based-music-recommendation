@@ -5,7 +5,7 @@ import json
 
 def get_user_token(username: str, scope: str, redirect_uri: str):
     """get token for specified user via credentials"""
-    with open("./spotify/spotify_credentials.json", "r") as file:
+    with open("spotify_credentials.json", "r") as file:
         creds = json.load(file)
     return spotipy.util.prompt_for_user_token(username, scope, creds['CLIENT_ID'], creds['CLIENT_SECRET'],
                                               redirect_uri)
@@ -88,7 +88,7 @@ def create_playlist(sp: spotipy.Spotify, tracks_uri: list, playlist_name: str, a
     print('playlist, {}, has been generated.'.format(playlist_name))
 
 
-username = input("Enter username: ")
+username = 'atamargo'
 scope = 'user-library-read user-top-read playlist-modify-public user-follow-read'
 redirect_uri = 'https://localhost:8000/callback'
 
