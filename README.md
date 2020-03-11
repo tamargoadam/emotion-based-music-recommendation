@@ -15,3 +15,6 @@ pipenv should've installed the necessary libraries (pandas, tweepy, etc...). now
 pipenv shell
 python3 twitter_popularsearch.py
 ```
+
+# extract credentials.zip
+unzip credentials.zip
