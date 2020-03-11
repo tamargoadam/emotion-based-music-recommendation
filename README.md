@@ -8,7 +8,7 @@ install dependency manager and dependencies
 (pipenv allows us to manage dependencies)
 ```
 pip install --user pipenv
-pipenv install
+pipenv install 
 ```
 pipenv should've installed the necessary libraries (pandas, tweepy, etc...). now use pipenv to create a virtualenv and run a script.
 ```
