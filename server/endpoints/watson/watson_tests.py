@@ -6,7 +6,7 @@ from ibm_watson.tone_analyzer_v3 import ToneInput
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 
 #Authentication Method
-with open("watson_credentials.json", "r") as file:
+with open("../credentials/watson_credentials.json", "r") as file:
         creds = json.load(file)
         authenticator = IAMAuthenticator(creds['API_KEY'])
         tone_analyzer = ToneAnalyzerV3(

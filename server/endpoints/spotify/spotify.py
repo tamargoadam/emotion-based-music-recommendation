@@ -5,7 +5,7 @@ import json
 
 def get_user_token(username: str, scope: str, redirect_uri: str):
     """get token for specified user via credentials"""
-    with open("spotify_credentials.json", "r") as file:
+    with open("../credentials/spotify_credentials.json", "r") as file:
         creds = json.load(file)
     return spotipy.util.prompt_for_user_token(username, scope, creds['CLIENT_ID'], creds['CLIENT_SECRET'],
                                               redirect_uri)

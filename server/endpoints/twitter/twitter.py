@@ -4,7 +4,7 @@ import json
 
 def get_twitter_api():
     """authenticates twitter and uses auth info to create and return a tweepy API"""
-    with open("twitter_credentials.json", "r") as file:
+    with open("../credentials/twitter_credentials.json", "r") as file:
         creds = json.load(file)
     auth = tweepy.OAuthHandler(creds['CONSUMER_KEY'], creds['CONSUMER_SECRET'])
     auth.set_access_token(creds['ACCESS_KEY'], creds['ACCESS_SECRET'])
