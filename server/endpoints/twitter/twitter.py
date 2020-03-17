@@ -55,7 +55,6 @@ def get_all_tweets(screen_name):
 
 
 
-#get_all_tweets('timdoozy')  # --> data/timdoozy_tweets.csv
-#get_all_tweets('billsimmons')   # --> data/billsimmons_tweets.csv
-#get_all_tweets('tamargoadam')   # --> data/tamargoadam_tweets.csv
-get_all_tweets('timdoozy')
+get_all_tweets('timdoozy')  # --> data/timdoozy_tweets.csv
+get_all_tweets('billsimmons')   # --> data/billsimmons_tweets.csv
+get_all_tweets('tamargoadam')   # --> data/tamargoadam_tweets.csv

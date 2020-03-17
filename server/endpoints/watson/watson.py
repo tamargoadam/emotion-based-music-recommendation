@@ -56,3 +56,5 @@ def get_sentiment(screen_name):
     
 
 get_sentiment('timdoozy')
+get_sentiment('billsimmons')
+get_sentiment('tamargoadam')

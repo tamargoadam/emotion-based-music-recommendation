@@ -135,7 +135,8 @@ dmypy.json
 
 *.xml
 *.iml
-server/endpoints/watson/watson_credentials.json
+
+# credential files
 server/endpoints/credentials/spotify_credentials.json
 server/endpoints/credentials/twitter_credentials.json
 server/endpoints/credentials/watson_credentials.json
