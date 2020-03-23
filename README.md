@@ -24,7 +24,8 @@ unzip credentials.zip
 
 ## Testing Tweets to CSV
 Ensure you have dependencies installed before running!
-
+#### IMPORTANT: create a "data" folder within twitter
+#### Without the data folder it won't run
 from the working directory
 ```
 cd server/endpoints/twitter
