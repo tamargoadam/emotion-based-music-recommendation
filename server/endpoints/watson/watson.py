@@ -9,14 +9,14 @@ import pandas as pd
 wpath = 'data/'
 tpath = '../twitter/data/'
 
-#Authentication Method
+# Authentication Method
 with open("../credentials/watson_credentials.json", "r") as file:
-        creds = json.load(file)
-        authenticator = IAMAuthenticator(creds['API_KEY'])
-        tone_analyzer = ToneAnalyzerV3(
-        version=creds['VERSION'],
-        authenticator=authenticator)
-        tone_analyzer.set_service_url(creds['URL'])
+    creds = json.load(file)
+    authenticator = IAMAuthenticator(creds['API_KEY'])
+    tone_analyzer = ToneAnalyzerV3(
+    version=creds['VERSION'],
+    authenticator=authenticator)
+    tone_analyzer.set_service_url(creds['URL'])
 
 
 # 
@@ -35,15 +35,13 @@ def get_sentiment(screen_name):
     with open(wpath + '%s_sentiment.json' % screen_name, 'w') as outfile:
         json.dump(x, outfile)
 
-
     # tone analyzer api call from sentiment.json data
     with open(join(os.getcwd(), wpath + '%s_sentiment.json' % screen_name)) as tone_json:
         tone = tone_analyzer.tone(
             tone_input=json.load(tone_json)['text'],
             content_type='text/plain',
             sentences=True).get_result()
-    #print(json.dumps(tone, indent=2))
-
+    # print(json.dumps(tone, indent=2))
 
     # save results as sentiment data file for user
     hello = json.dumps(tone)
@@ -51,8 +49,7 @@ def get_sentiment(screen_name):
     with open(wpath + '%s_sentiment.json' % screen_name, 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
 
-
-    #data.to_csv(wpath + '%s_sentiment.csv')
+    # data.to_csv(wpath + '%s_sentiment.csv')
     
 
 get_sentiment('timdoozy')

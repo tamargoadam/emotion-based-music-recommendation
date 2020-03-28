@@ -19,23 +19,26 @@ def authenticate_spotify(token: str):
     return sp
 
 
-def get_track_features(track_id,sp: spotipy.Spotify):
+def get_track_features(track_id: str, sp: spotipy.Spotify):
+    """get dict of track features"""
     if track_id is None:
         return None
     else:
         features = sp.audio_features([track_id])
     return features
 
-def get_features(tracks,sp: spotipy.Spotify):
-    tracks_with_features=[]
+
+def get_tracks_with_features(tracks: list, sp: spotipy.Spotify):
+    """return list of dicts with track info and features"""
+    tracks_with_features = []
 
     for track in tracks:
-        features = get_track_features(track['id'],sp)
-        print (track['name'])
+        features = get_track_features(track['id'], sp)
         if not features:
             print("passing track %s" % track['name'])
             pass
         else:
+            print("getting features for track %s", track['name'])
             f = features[0]
             tracks_with_features.append(dict(
                                             name=track['name'],
@@ -51,10 +54,6 @@ def get_features(tracks,sp: spotipy.Spotify):
                                             liveness=f['liveness'],
                                             valence=f['valence']
                                             ))
-
-        # time.sleep(0.1)
-
-    # print(tracks_with_features[0])
     return tracks_with_features
 
 
@@ -65,14 +64,13 @@ def get_all_tracks_from_playlists(username: str, sp: spotipy.Spotify):
     trackList = []
     for playlist in playlists['items']:
         if playlist['owner']['id'] == username:
-            print (playlist['name'],' no. of tracks: ',playlist['tracks']['total'])
-            results = sp.user_playlist(username, playlist['id'],fields="tracks,next")
+            print(playlist['name'], ' no. of tracks: ', playlist['tracks']['total'])
+            results = sp.user_playlist(username, playlist['id'], fields="tracks,next")
             tracks = results['tracks']
             for i, item in enumerate(tracks['items']):
                 track = item['track']
                 trackList.append(dict(name=track['name'], id=track['id'], artist=track['artists'][0]['name']))
     return trackList
-
 
 
 def get_top_artists(sp: spotipy.Spotify, amount: int = 20):
@@ -144,21 +142,23 @@ def create_playlist(sp: spotipy.Spotify, tracks_uri: list, playlist_name: str, a
     sp.user_playlist_add_tracks(user_id, playlist_id, tracks_uri[0:amount])
     print('playlist, {}, has been generated.'.format(playlist_name))
 
+
 def write_to_csv(track_features):
     df = pd.DataFrame(track_features)
-    df.drop_duplicates(subset=['name','artist'])
-    print ('Total tracks in data set', len(df))
-    df.to_csv('mySongsDataset.csv',index=False)
+    df.drop_duplicates(subset=['name', 'artist'])
+    print('Total tracks in data set', len(df))
+    df.to_csv('mySongsDataset.csv', index=False)
 
 
-def do_it(sp: spotipy.Spotify, username):
+def do_it(sp: spotipy.Spotify, username: str):
     sp = spotipy.Spotify(token)
-    print ("Getting user tracks from playlists")
+    print("Getting user tracks from playlists")
     tracks = get_all_tracks_from_playlists(username, sp)
-    print ("Getting track audio features")
-    tracks_with_features = get_features(tracks,sp)
-    print ("Storing into csv")
+    print("Getting track audio features")
+    tracks_with_features = get_tracks_with_features(tracks, sp)
+    print("Storing into csv")
     write_to_csv(tracks_with_features)
+
 
 username = 'timdoozy'
 scope = 'user-library-read user-top-read playlist-modify-public user-follow-read'

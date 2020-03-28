@@ -1,6 +1,7 @@
 import json
 
-wpath = '../watson/data/'
+wpath = '../endpoints/watson/data/'
+
 
 # Function to read the watson sentiment data 
 def get_sentiment(screen_name):
