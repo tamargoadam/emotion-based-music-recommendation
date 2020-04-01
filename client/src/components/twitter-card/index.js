@@ -9,14 +9,10 @@ export default class TwitterCard extends Component {
     return (
           <Card>
             <div class={style.cardHeader}>
-              <h2 class=" mdc-typography--title">Home card</h2>
-              <div class=" mdc-typography--caption">Welcome to home route</div>
-            </div>
-            <div class={style.cardBody}>
-              login to twitter
+              <h2 class=" mdc-typography--title">Link your Twitter account</h2>
             </div>
             <Card.Actions>
-              <Card.ActionButton>Link Twitter</Card.ActionButton>
+              <Card.ActionButton>SIGN IN</Card.ActionButton>
             </Card.Actions>
           </Card>
     );

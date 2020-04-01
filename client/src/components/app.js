@@ -3,9 +3,12 @@ import { Router } from 'preact-router';
 
 import Header from './header';
 import TwitterCard from './twitter-card';
+import AuthCard from './auth-card';
 import Home from '../routes/home';
 import Profile from '../routes/profile';
 import NotFound from '../routes/404';
+import Recommend from '../routes/recommend'
+import Feedback from '../routes/feedback'
 
 export default class App extends Component {
   /** Gets fired when the route changes.
@@ -22,15 +25,13 @@ export default class App extends Component {
     return (
       <div id="app">
         <Header selectedRoute={this.state.currentUrl} />
-        <TwitterCard /> 
-        <TwitterCard /> 
+        <Router onChange={this.handleRoute}>
+          <Home path="/" />
+          <Recommend path="/results/" />
+          <Feedback path="/feedback/" />
+          <NotFound default />
+        </Router>
       </div>
     );
   }
 }
-        //<Router onChange={this.handleRoute}>
-          //<Home path="/" />
-          //<Profile path="/profile/" user="me" />
-          //<Profile path="/profile/:user" />
-          //<NotFound default />
-        //</Router>
