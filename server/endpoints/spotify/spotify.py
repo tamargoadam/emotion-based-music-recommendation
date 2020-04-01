@@ -33,16 +33,13 @@ def get_tracks_with_features(tracks: list, sp: spotipy.Spotify):
     tracks_with_features = []
 
     for track in tracks:
+        print(track)
         features = get_track_features(track['id'], sp)
-        if not features:
-            print("passing track %s" % track['name'])
-            pass
-        else:
-            print("getting features for track %s", track['name'])
+        if features:
             f = features[0]
             tracks_with_features.append(dict(
                                             name=track['name'],
-                                            artist=track['artist'],
+                                            artist=track['artists'][0]['name'],
                                             id=track['id'],
                                             danceability=f['danceability'],
                                             instrumentalness=f['instrumentalness'],
@@ -115,15 +112,15 @@ def get_top_and_similar_artists(sp: spotipy.Spotify, amount: int = 20):
 def get_artists_top_tracks(sp: spotipy.Spotify, artists_uri: list, amount: int = 50):
     """compiles unordered list of top tracks made by artists in artists_uri of length amount"""
     print('...getting top tracks for each artist')
-    tracks_uri = []
+    tracks = []
     for artist in artists_uri:
         all_top_tracks_data = sp.artist_top_tracks(artist)
         top_tracks_data = all_top_tracks_data['tracks']
         for track_data in top_tracks_data:
-            tracks_uri.append(track_data['uri'])
-    random.shuffle(tracks_uri)
-    tracks_uri = tracks_uri[0:amount]
-    return tracks_uri
+            tracks.append(track_data)
+    random.shuffle(tracks)
+    tracks = tracks[0:amount]
+    return tracks
 
 
 def get_emo_tracks(sp: spotipy.Spotify, top_tracks_uri: list, emotion: list):
@@ -131,15 +128,18 @@ def get_emo_tracks(sp: spotipy.Spotify, top_tracks_uri: list, emotion: list):
     return
 
 
-def create_playlist(sp: spotipy.Spotify, tracks_uri: list, playlist_name: str, amount: int = 0):
+def create_playlist(sp: spotipy.Spotify, tracks: list, playlist_name: str, amount: int = 0):
     """creates a playlist or tracks from tracks_uri on the users account of length amount"""
     print('...creating playlist')
     if amount == 0:
-        amount = len(tracks_uri)
+        amount = len(tracks)
     user_id = sp.current_user()["id"]
     playlist_id = sp.user_playlist_create(user_id, playlist_name)["id"]
-    random.shuffle(tracks_uri)
-    sp.user_playlist_add_tracks(user_id, playlist_id, tracks_uri[0:amount])
+    random.shuffle(tracks)
+    tracks_uri = []
+    for track in tracks[0:amount]:
+        tracks_uri.append(track['uri'])
+    sp.user_playlist_add_tracks(user_id, playlist_id, tracks_uri)
     print('playlist, {}, has been generated.'.format(playlist_name))
 
 
@@ -147,31 +147,11 @@ def write_to_csv(track_features):
     df = pd.DataFrame(track_features)
     df.drop_duplicates(subset=['name', 'artist'])
     print('Total tracks in data set', len(df))
-    df.to_csv('mySongsDataset.csv', index=False)
-
-
-def do_it(sp: spotipy.Spotify, username: str):
-    sp = spotipy.Spotify(token)
-    print("Getting user tracks from playlists")
-    tracks = get_all_tracks_from_playlists(username, sp)
-    print("Getting track audio features")
-    tracks_with_features = get_tracks_with_features(tracks, sp)
-    print("Storing into csv")
-    write_to_csv(tracks_with_features)
-
-
-username = 'timdoozy'
-scope = 'user-library-read user-top-read playlist-modify-public user-follow-read'
-redirect_uri = 'https://localhost:8000/callback'
-
-token = get_user_token(username, scope, redirect_uri)
-
-if token:
-    sp = authenticate_spotify(token)
-    do_it(sp, username)
+    df.to_csv('mySongsDataSet.csv', index=False)
 
 
 """
+# TO TEST FUNCTIONS
 
 username = 'atamargo'
 scope = 'user-library-read user-top-read playlist-modify-public user-follow-read'
@@ -182,12 +162,11 @@ token = get_user_token(username, scope, redirect_uri)
 if token:
     sp = authenticate_spotify(token)
     results = get_artists_top_tracks(sp, get_top_and_similar_artists(sp))
-    print('\nTOP TRACKS\n')
-    for uri in results:
-        track = sp.track(uri)
-        print(track['name'])
+    results = get_tracks_with_features(results, sp)
+    print('\nTOP TRACKS WITH FEATURES\n')
+    for result in results:
+        print('{0} - {1}'.format(result['artist'], result['name']))
     create_playlist(sp, results, "TEST")
 else:
     print("Can't get token for ", username)
-
 """

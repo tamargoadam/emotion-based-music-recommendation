@@ -4,6 +4,7 @@ import csv
 import re
 path = 'data/'
 
+
 def get_twitter_api():
     """authenticates twitter and uses auth info to create and return a tweepy API"""
     with open("../credentials/twitter_credentials.json", "r") as file:
@@ -12,16 +13,17 @@ def get_twitter_api():
     auth.set_access_token(creds['ACCESS_KEY'], creds['ACCESS_SECRET'])
     return tweepy.API(auth)
 
+
 # Helper function to remove urls from tweets
 def remove_url(txt):
-    #remove stuff from our tweets we don't want
+    # remove stuff from our tweets we don't want
     return " ".join(re.sub("([^0-9A-Za-z \t])|(\w+:\/\/\S+)", "", txt).split())
 
 
 # Helper function to get ALL 3000+ tweets of a specified user
 # Source: https://gist.github.com/yanofsky/5436496
 def get_all_tweets(screen_name):
-    api = get_twitter_api() #always need this when making twitter api calls!
+    api = get_twitter_api() # always need this when making twitter api calls!
     alltweets = []
     # (200 is the maximum allowed count at a time)
     new_tweets = api.user_timeline(screen_name = screen_name,count=200)
@@ -40,13 +42,13 @@ def get_all_tweets(screen_name):
         # update the id of the oldest tweet less one
         oldest = alltweets[-1].id - 1
         print("...%s tweets downloaded so far" % (len(alltweets)))
-        ### END OF WHILE LOOP ###
-      # transform the tweepy tweets into a 2D array that will populate the csv
-      # tweepy status object properties can be found here:
-      # https://gist.github.com/jaymcgrath/367c521f1dd786bc5a05ec3eeeb1cb04
+        # END OF WHILE LOOP
+    # transform the tweepy tweets into a 2D array that will populate the csv
+    # tweepy status object properties can be found here:
+    # https://gist.github.com/jaymcgrath/367c521f1dd786bc5a05ec3eeeb1cb04
     outtweets = [[remove_url(tweet.text)] for tweet in alltweets]
     # write the csv
-    #save_json('%s_tweets.csv' % screen_name, outtweets)
+    # save_json('%s_tweets.csv' % screen_name, outtweets)
     with open(path + '%s_tweets.csv' % screen_name, 'w') as f:
         writer = csv.writer(f)
         writer.writerow(["text"])
