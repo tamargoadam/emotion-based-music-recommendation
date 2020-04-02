@@ -4,7 +4,7 @@ import json
 import pandas as pd
 
 
-def get_user_token(username: str, scope: str, redirect_uri: str):
+def get_user_token(username: str, scope: str, redirect_uri: str) -> str:
     """get token for specified user via credentials"""
     with open("../credentials/spotify_credentials.json", "r") as file:
         creds = json.load(file)
@@ -12,7 +12,7 @@ def get_user_token(username: str, scope: str, redirect_uri: str):
                                               redirect_uri)
 
 
-def authenticate_spotify(token: str):
+def authenticate_spotify(token: str) -> spotipy.Spotify:
     """authenticates Spotify account via the passed in token"""
     print('...connecting to Spotify')
     sp = spotipy.Spotify(auth=token)
@@ -28,7 +28,7 @@ def get_track_features(track_id: str, sp: spotipy.Spotify):
     return features
 
 
-def get_tracks_with_features(tracks: list, sp: spotipy.Spotify):
+def get_tracks_with_features(tracks: list, sp: spotipy.Spotify) -> list:
     """return list of dicts with track info and features"""
     tracks_with_features = []
 
@@ -54,7 +54,7 @@ def get_tracks_with_features(tracks: list, sp: spotipy.Spotify):
     return tracks_with_features
 
 
-def get_all_tracks_from_playlists(username: str, sp: spotipy.Spotify):
+def get_all_tracks_from_playlists(username: str, sp: spotipy.Spotify) -> list:
     """saves %s_music.csv a collection of all songs with feature data"""
     print('...getting all tracks from playlists')
     playlists = sp.user_playlists(username)
@@ -70,7 +70,7 @@ def get_all_tracks_from_playlists(username: str, sp: spotipy.Spotify):
     return trackList
 
 
-def get_top_artists(sp: spotipy.Spotify, amount: int = 20):
+def get_top_artists(sp: spotipy.Spotify, amount: int = 20) -> list:
     """compiles list of user's top artists of length amount"""
     print('...getting top artists')
     artists_name = []
@@ -86,7 +86,7 @@ def get_top_artists(sp: spotipy.Spotify, amount: int = 20):
     return artists_uri
 
 
-def get_top_and_similar_artists(sp: spotipy.Spotify, amount: int = 20):
+def get_top_and_similar_artists(sp: spotipy.Spotify, amount: int = 20) -> list:
     """compiles a list of top and similar artists of length amount"""
     print('...getting top and similar artists')
     artists_name = []
@@ -109,7 +109,7 @@ def get_top_and_similar_artists(sp: spotipy.Spotify, amount: int = 20):
     return artists_uri
 
 
-def get_artists_top_tracks(sp: spotipy.Spotify, artists_uri: list, amount: int = 50):
+def get_artists_top_tracks(sp: spotipy.Spotify, artists_uri: list, amount: int = 50) -> list:
     """compiles unordered list of top tracks made by artists in artists_uri of length amount"""
     print('...getting top tracks for each artist')
     tracks = []
@@ -121,11 +121,6 @@ def get_artists_top_tracks(sp: spotipy.Spotify, artists_uri: list, amount: int =
     random.shuffle(tracks)
     tracks = tracks[0:amount]
     return tracks
-
-
-def get_emo_tracks(sp: spotipy.Spotify, top_tracks_uri: list, emotion: list):
-    """compile subset of top_tracks_uri that compliment indicated emotion"""
-    return
 
 
 def create_playlist(sp: spotipy.Spotify, tracks: list, playlist_name: str, amount: int = 0):

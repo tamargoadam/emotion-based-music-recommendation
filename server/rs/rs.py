@@ -1,24 +1,20 @@
-import json
+# import json
+from endpoints.watson import watson
+from endpoints.twitter import twitter
 
-wpath = '../endpoints/watson/data/'
 
-
-# Function to read the watson sentiment data 
-def get_sentiment(screen_name):
-    # open user .json data found at: `watson/data/%s_sentiment.json`
-    f = open(wpath + '%s_sentiment.json' % screen_name,)
-    data = json.load(f)
+def get_sentiment(screen_name: str, num_tweets: int = 1) -> list:
+    """generate list of sentiments corresponding to user's tweets"""
+    sentiment_data = watson.get_sentiment(twitter.get_tweets_by_user(screen_name, num_tweets))
+    # TODO: fix credential path issue
 
     tones = []
-    for i in data['document_tone']['tones']:
-        thisdict = dict(tone=i['tone_name'], score=i['score'])
-        print(thisdict)
-        tones.append(thisdict)
-    # save the document tones as a new json file
-    with open('data/' + '%s_data.json' % screen_name, 'w', encoding='utf-8') as outfile:
-        json.dump(tones, outfile, ensure_ascii=False, indent=2)
-    f.close()
+    for t in sentiment_data['document_tone']['tones']:
+        tone_score = dict(tone=t['tone_name'], score=t['score'])
+        print(tone_score)
+        tones.append(tone_score)
     return tones
+
 
 def normalize_data(name):    
     """
@@ -30,6 +26,7 @@ def normalize_data(name):
     min_max_scaler = preprocessing.MinMaxScaler()
     loudness_scaled = min_max_scaler.fit_transform(loudness)
     """
+
 
 def cluster_songs(name):
     """
@@ -50,6 +47,7 @@ def cluster_songs(name):
         Sum_of_squared_distances.append(km.inertia_)
     """
 
+
 def cluster_moods(name):
     """
     # identify the moods associated with each cluster from the user data
@@ -58,4 +56,4 @@ def cluster_moods(name):
     """
 
 
-get_sentiment('timdoozy')
+get_sentiment('atamargo')

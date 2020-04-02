@@ -1,11 +1,10 @@
 import tweepy
 import json
-import csv
 import re
-path = 'data/'
+# path = 'data/'
 
 
-def get_twitter_api():
+def get_twitter_api() -> tweepy.API:
     """authenticates twitter and uses auth info to create and return a tweepy API"""
     with open("../credentials/twitter_credentials.json", "r") as file:
         creds = json.load(file)
@@ -14,15 +13,23 @@ def get_twitter_api():
     return tweepy.API(auth)
 
 
-# Helper function to remove urls from tweets
-def remove_url(txt):
-    # remove stuff from our tweets we don't want
+def remove_url(txt: str) -> str:
+    """remove urls from tweets"""
     return " ".join(re.sub("([^0-9A-Za-z \t])|(\w+:\/\/\S+)", "", txt).split())
 
 
-# Helper function to get ALL 3000+ tweets of a specified user
-# Source: https://gist.github.com/yanofsky/5436496
+def get_tweets_by_user(username: str, num_tweets: int = 1) -> list:
+    """get user's 'num_tweets' most recent tweets"""
+    api = get_twitter_api()
+    tweets_data = api.user_timeline(screen_name=username)
+    tweets = [tweet_data.text for tweet_data in tweets_data]
+    return tweets[:num_tweets]
+
+
+"""
 def get_all_tweets(screen_name):
+    # Helper function to get ALL 3000+ tweets of a specified user
+    # Source: https://gist.github.com/yanofsky/5436496
     api = get_twitter_api() # always need this when making twitter api calls!
     alltweets = []
     # (200 is the maximum allowed count at a time)
@@ -54,9 +61,4 @@ def get_all_tweets(screen_name):
         writer.writerow(["text"])
         writer.writerows(outtweets)
     pass
-
-
-
-get_all_tweets('timdoozy')  # --> data/timdoozy_tweets.csv
-get_all_tweets('billsimmons')   # --> data/billsimmons_tweets.csv
-get_all_tweets('tamargoadam')   # --> data/tamargoadam_tweets.csv
+"""
