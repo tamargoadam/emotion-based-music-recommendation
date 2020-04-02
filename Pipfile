@@ -9,6 +9,9 @@ verify_ssl = true
 requests = "*"
 twython = "*"
 pandas = "*"
+tweepy = "*"
+ibm-watson = "*"
+spotipy = "*"
 
 [requires]
-python_version = "3.6"
+python_version = "3.8.1"
