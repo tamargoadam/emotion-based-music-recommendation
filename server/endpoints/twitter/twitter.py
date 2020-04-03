@@ -1,16 +1,23 @@
+import os
 import tweepy
-import json
 import re
 # path = 'data/'
 
 
 def get_twitter_api() -> tweepy.API:
     """authenticates twitter and uses auth info to create and return a tweepy API"""
-    with open("../credentials/twitter_credentials.json", "r") as file:
-        creds = json.load(file)
-    auth = tweepy.OAuthHandler(creds['CONSUMER_KEY'], creds['CONSUMER_SECRET'])
-    auth.set_access_token(creds['ACCESS_KEY'], creds['ACCESS_SECRET'])
+    auth = tweepy.OAuthHandler(os.environ['TWITTER_CONSUMER_KEY'], os.environ['TWITTER_CONSUMER_SECRET'])
+    auth.set_access_token(os.environ['TWITTER_ACCESS_KEY'], os.environ['TWITTER_ACCESS_SECRET'])
     return tweepy.API(auth)
+
+
+def validate_user_exists(username: str) -> bool:
+    api = get_twitter_api()
+    try:
+        api.get_user(username)
+    except Exception:
+        return False
+    return True
 
 
 def remove_url(txt: str) -> str:

@@ -1,15 +1,13 @@
+import os
 import spotipy
 import random
-import json
 import pandas as pd
 
 
 def get_user_token(username: str, scope: str, redirect_uri: str) -> str:
     """get token for specified user via credentials"""
-    with open("../credentials/spotify_credentials.json", "r") as file:
-        creds = json.load(file)
-    return spotipy.util.prompt_for_user_token(username, scope, creds['CLIENT_ID'], creds['CLIENT_SECRET'],
-                                              redirect_uri)
+    return spotipy.util.prompt_for_user_token(username, scope, os.environ['SPOTIFY_CLIENT_ID'],
+                                              os.environ['SPOTIFY_CLIENT_SECRET'], redirect_uri)
 
 
 def authenticate_spotify(token: str) -> spotipy.Spotify:
