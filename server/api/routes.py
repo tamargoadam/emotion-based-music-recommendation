@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from models.user import User
 from endpoints.twitter.twitter import validate_user_exists
 
@@ -8,25 +8,36 @@ app = Flask(__name__)
 
 @app.route('/')
 def default():
+    """default server url"""
     return 'Found', 201
 
 
 @app.route('/twitter-username')
 def get_twitter_username():
-    # example url extension: '/twitter-username?user=atamargo'
+    """
+    validates that argument, user, is a valid twitter username.
+    example url extension: '/twitter-username?user=atamargo'
+    """
     username = request.args.get('user')
     if not username:
-        return 'No username provided.', 400
+        response = Response('No username provided.', 400)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
     if validate_user_exists(username):
-        return 'User, ' + username + ', validated successfully.', 201
+        response = Response(username, 201)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
     else:
-        return 'User, ' + username + ', is not a valid user.', 400
+        response = Response('User, ' + username + ', is not a valid user.', 400)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
 
 
 @app.route('/playlist', methods=['GET', 'POST'])
 def playlist():
     """
-    Data format should be as follows:
+    get JSON user data, generate playlist for user, and post generated playlist.
+    data format should be as follows:
     {
         "user" : {
             "spotify_token" : "my-token",
