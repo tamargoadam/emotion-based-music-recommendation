@@ -148,7 +148,7 @@ def write_to_csv(track_features):
 
 username = 'atamargo'
 scope = 'user-library-read user-top-read playlist-modify-public user-follow-read'
-redirect_uri = 'https://localhost:8000/callback'
+redirect_uri = 'https://localhost:8080/callback'
 
 token = get_user_token(username, scope, redirect_uri)
 

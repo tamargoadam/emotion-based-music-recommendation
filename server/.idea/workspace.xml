@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c655328f-1d81-433f-b840-a8d7c8869e28" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/endpoints/spotify/spotify.py" beforeDir="false" afterPath="$PROJECT_DIR$/endpoints/spotify/spotify.py" afterDir="false" />
     </list>
     <ignored path="../.idea/" />
     <ignored path=".idea/" />
@@ -14,11 +15,14 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/endpoints/spotify/spotify.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="51">
-              <caret line="3" selection-start-line="3" selection-end-line="3" />
+            <state relative-caret-position="95">
+              <caret line="150" column="37" selection-start-line="150" selection-start-column="37" selection-end-line="150" selection-end-column="37" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -35,7 +39,7 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/api/routes.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="201">
@@ -115,10 +119,10 @@
         <option value="$PROJECT_DIR$/api/__init__.py" />
         <option value="$PROJECT_DIR$/api/views.py" />
         <option value="$PROJECT_DIR$/models/user.py" />
-        <option value="$PROJECT_DIR$/endpoints/spotify/spotify.py" />
         <option value="$PROJECT_DIR$/endpoints/twitter/twitter.py" />
         <option value="$PROJECT_DIR$/endpoints/watson/watson.py" />
         <option value="$PROJECT_DIR$/api/routes.py" />
+        <option value="$PROJECT_DIR$/endpoints/spotify/spotify.py" />
       </list>
     </option>
   </component>
@@ -177,7 +181,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.routes">
+  <component name="RunManager" selected="Python.spotify">
     <configuration name="routes" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="server" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -301,10 +305,10 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.spotify" />
         <item itemvalue="Python.routes" />
         <item itemvalue="Python.rs" />
         <item itemvalue="Python.watson" />
-        <item itemvalue="Python.spotify" />
         <item itemvalue="Python.twitter" />
       </list>
     </recent_temporary>
@@ -399,13 +403,6 @@
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/api/views.py" />
-    <entry file="file://$PROJECT_DIR$/endpoints/spotify/spotify.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" selection-start-line="3" selection-end-line="3" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/endpoints/twitter/twitter.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="187">
@@ -446,6 +443,16 @@
           <caret line="29" column="9" lean-forward="true" selection-start-line="29" selection-start-column="9" selection-end-line="29" selection-end-column="9" />
           <folding>
             <element signature="e#0#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/endpoints/spotify/spotify.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="95">
+          <caret line="150" column="37" selection-start-line="150" selection-start-column="37" selection-end-line="150" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
