@@ -32,18 +32,22 @@ export default class TwitterCard extends Component {
         super(props);
 
         this.state = {
-            token: ""
+            token: props.token
         };
+    }
+
+    onTokenChange() {
+        if(this.state.token) {
+            this.props.changeToken(this.state.token);
+        }
     }
 
     componentDidMount() {
         // Set token
         let _token = hash.access_token;
         if (_token) {
-            // Set token
-            this.setState({
-                token: _token
-            });
+            this.setState({ token: _token },
+                () => this.onTokenChange().bind(this));
         }
     }
 

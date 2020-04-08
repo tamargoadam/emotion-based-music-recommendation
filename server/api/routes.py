@@ -28,7 +28,7 @@ def get_twitter_username():
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
     else:
-        response = Response('User, ' + username + ', is not a valid user.', 400)
+        response = Response('User, ' + username + ', is not a valid user.', 403)
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
 
