@@ -12,3 +12,17 @@
 .cardBody {
   padding: 16px;
 }
+
+.textInput {
+  margin-left: 20px;
+}
+
+.button {
+  margin-left: 20px;
+  margin-bottom: 10px;
+}
+
+.message {
+  margin-left: 20px;
+  margin-bottom: 10px;
+}

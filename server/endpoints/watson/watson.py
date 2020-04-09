@@ -1,17 +1,15 @@
-import json
+import os
 from ibm_watson import ToneAnalyzerV3
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 # from endpoints.twitter.twitter import *
 
 
 def get_tone_analyzer() -> ToneAnalyzerV3:
-    with open("../credentials/watson_credentials.json", "r") as file:
-        creds = json.load(file)
-        authenticator = IAMAuthenticator(creds['API_KEY'])
-        tone_analyzer = ToneAnalyzerV3(
-            version=creds['VERSION'],
-            authenticator=authenticator)
-        tone_analyzer.set_service_url(creds['URL'])
+    authenticator = IAMAuthenticator(os.environ['WATSON_API_KEY'])
+    tone_analyzer = ToneAnalyzerV3(
+        version=os.environ['WATSON_VERSION'],
+        authenticator=authenticator)
+    tone_analyzer.set_service_url(os.environ['WATSON_URL'])
     return tone_analyzer
 
 
