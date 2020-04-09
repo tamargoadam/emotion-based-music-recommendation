@@ -69,7 +69,7 @@ export default class TwitterCard extends Component {
                   }}
                   />
               </div>
-              <Card.Actions onClick= {this.toggleButtonState.bind(this)}>
+              <Card.Actions onClick={this.toggleButtonState.bind(this)}>
                   <Card.ActionButton>Link Account</Card.ActionButton>
               </Card.Actions>
               {this.state.twitter_username &&

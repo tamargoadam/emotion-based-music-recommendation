@@ -131,9 +131,10 @@ def create_playlist(sp: spotipy.Spotify, tracks: list, playlist_name: str, amoun
     random.shuffle(tracks)
     tracks_uri = []
     for track in tracks[0:amount]:
-        tracks_uri.append(track['uri'])
+        tracks_uri.append(track['id'])
     sp.user_playlist_add_tracks(user_id, playlist_id, tracks_uri)
     print('playlist, {}, has been generated.'.format(playlist_name))
+    return sp.playlist(playlist_id)["external_urls"]["spotify"]
 
 
 def write_to_csv(track_features):

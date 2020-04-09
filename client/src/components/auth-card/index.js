@@ -26,7 +26,7 @@ const hash = window.location.hash
         return initial;
     }, {});
 
-export default class TwitterCard extends Component {
+export default class AuthCard extends Component {
 
     constructor(props) {
         super(props);

@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, Response
 from models.user import User
 from endpoints.twitter.twitter import validate_user_exists
+from endpoints.spotify.spotify import *
 
 
 app = Flask(__name__)
@@ -33,24 +34,24 @@ def get_twitter_username():
         return response
 
 
-@app.route('/playlist', methods=['GET', 'POST'])
+@app.route('/playlist')
 def playlist():
-    """
-    get JSON user data, generate playlist for user, and post generated playlist.
-    data format should be as follows:
-    {
-        "user" : {
-            "spotify_token" : "my-token",
-            "twitter_username" : "my-username"
-            }
-    }
-    """
-    user_data = request.json.get('user')
-    new_user = User(user_data['spotify_token'], user_data['twitter_username'])
-    playlist = []
+    twitter_username = request.args.get('user')
+    spotify_token = request.args.get('token')
+    new_user = User(spotify_token, twitter_username)
     # TODO: use new_user to generate playlist
     # playlist = generate_playlist(new_user)
-    return jsonify(playlist), 201
+    """BEGIN EXAMPLE PLAYLIST"""
+    sp = authenticate_spotify(spotify_token)
+    results = get_artists_top_tracks(sp, get_top_and_similar_artists(sp))
+    results = get_tracks_with_features(results, sp)
+    print('\nTOP TRACKS WITH FEATURES\n')
+    for result in results:
+        print('{0} - {1}'.format(result['artist'], result['name']))
+    playlist = create_playlist(sp, results, "TEST")
+    response = Response(playlist, 201)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
 
 
 if __name__ == "__main__":
