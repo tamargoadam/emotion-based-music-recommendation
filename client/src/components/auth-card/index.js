@@ -59,14 +59,14 @@ export default class AuthCard extends Component {
                 </div>
                 {!this.state.token && (
                     <a
-                        className="btn btn--loginApp-link"
+                        className={style.link}
                         href={`${authEndpoint}client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scopes.join("%20")}&response_type=token&show_dialog=true`}
                     >
                         SIGN IN
                     </a>
                 )}
                 {this.state.token && (
-                    <div>
+                    <div className={style.message}>
                         You're Spotify account is connected!
                     </div>
                 )}

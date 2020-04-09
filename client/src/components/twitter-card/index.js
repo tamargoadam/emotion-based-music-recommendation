@@ -59,21 +59,22 @@ export default class TwitterCard extends Component {
               <div class={style.cardHeader}>
               <h2 class=" mdc-typography--title">Link your Twitter account</h2>
               </div>
-              <div>
-                  <TextField
-                  label="Username"
+              <form>
+                  <TextField class={style.textInput} label="Username"
                   onKeyUp={e => {
                       this.setState({
                           text_input: e.target.value
                       });
                   }}
                   />
-              </div>
-              <Card.Actions onClick={this.toggleButtonState.bind(this)}>
+              </form>
+              <Card.Actions class={style.button} onClick={this.toggleButtonState.bind(this)}>
                   <Card.ActionButton>Link Account</Card.ActionButton>
               </Card.Actions>
-              {this.state.twitter_username &&
-              "Twitter account, " + this.state.twitter_username + ", is connected!"}
+              {this.state.twitter_username && (
+                  <div className={style.message}>
+                      Twitter account, {this.state.twitter_username}, is connected!
+                  </div>)}
           </Card>
     );
   }
