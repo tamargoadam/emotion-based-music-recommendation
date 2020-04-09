@@ -28,11 +28,127 @@ style.use("ggplot")
 from sklearn.metrics import silhouette_score
 
 def music_recommendation(username: str, num_songs: int) -> list:
-    sentiment = get_tones(username)  #get users sentiment tones from tweets
-    tone_songs = adjust_songs(sentiment, num_songs) #weigh the tones based on the number of songs supposed to be in the playlist
-    feature_data = get_spotify_playlist_data(username)  #get feature data from user spotify library of songs
-    
+    #Method to call when a user needs a new playlist created based on the number of songs as input
 
+    #sentiment = user sentiment results from analyzing tweets
+    sentiment = get_tones(username)  
+    #per_song = list of each song type to recommend in final playlist
+    per_song = adjust_songs(sentiment, num_songs) 
+    #feature_data = list of tracks with feature data included
+    feature_data = get_spotify_playlist_data(username)  
+    #using pandas dataframe to manipulate songs
+    df = pd.DataFrame.from_dict(feature_data)
+    #joy_tracks
+    joy_tracks = df.copy()
+    joy_tracks = joy_tracks.drop(['speechiness','instrumentalness','liveness','acousticness','name','artist','loudness','tempo','danceability'], axis=1)
+    joy_tracks = joy_tracks[joy_tracks['energy'] > 0.5]
+    joy_tracks = joy_tracks[joy_tracks['valence'] > 0.5]
+    #shuffle joy_tracks
+    joy_tracks = joy_tracks.sample(frac=1).reset_index(drop=True)
+
+    #anger_tracks
+    anger_tracks = df.copy()
+    anger_tracks = anger_tracks.drop(['speechiness','instrumentalness','liveness','acousticness','name','artist','loudness','tempo','danceability'], axis=1)
+    anger_tracks = anger_tracks[anger_tracks['energy'] > 0.5]
+    anger_tracks = anger_tracks[anger_tracks['valence'] < 0.5]
+    #shuffle anger_tracks
+    anger_tracks = anger_tracks.sample(frac=1).reset_index(drop=True)
+
+    #sad_tracks
+    sad_tracks = df.copy()
+    sad_tracks = sad_tracks.drop(['speechiness','instrumentalness','liveness','acousticness','name','artist','loudness','tempo','danceability'], axis=1)
+    sad_tracks = sad_tracks[sad_tracks['energy'] < 0.5]
+    sad_tracks = sad_tracks[sad_tracks['valence'] < 0.5]
+    #shuffle sad_tracks
+    sad_tracks = sad_tracks.sample(frac=1).reset_index(drop=True)
+    
+    #calm_tracks
+    calm_tracks = df.copy()
+    calm_tracks = calm_tracks.drop(['speechiness','instrumentalness','liveness','acousticness','name','artist','loudness','tempo','danceability'], axis=1)
+    calm_tracks = calm_tracks[calm_tracks['energy'] < 0.5]
+    calm_tracks = calm_tracks[calm_tracks['valence'] > 0.5]
+    #shuffle calm_tracks
+    calm_tracks = calm_tracks.sample(frac=1).reset_index(drop=True)
+
+    #check what tones have been calculated
+    tone_scores = [0, 0, 0, 0]
+    songs_per_tone = [0, 0, 0, 0]
+                #joy,anger,sadness,calm
+
+    #fill tone_scores
+    if 'joy' in tones.keys():
+        tone_scores[0] = tones['joy']
+    if 'anger' in tones.keys():
+        tone_scores[1] = tones['anger']
+    if 'sadness' in tones.keys():
+        tone_scores[2] = tones['sadness']
+    if 'calm' in tones.keys():
+        tone_scores[3] = tones['calm']
+
+    #fill tone_songs
+    if 'joy' in tone_songs.keys():
+        songs_per_tone[0] = tone_songs['joy']
+    if 'anger' in tone_songs.keys():
+        songs_per_tone[1] = tone_songs['anger']
+    if 'sadness' in tone_songs.keys():
+        songs_per_tone[2] = tone_songs['sadness']
+    if 'calm' in tone_songs.keys():
+        songs_per_tone[3] = tone_songs['calm']
+
+    playlist_tracks = []
+    count1 = 50
+    while(count1 > 0):
+        for i in range(len(tone_scores)):
+            if songs_per_tone[i] = 0:
+                i += 1
+            elif songs_per_tone[i] > 0 and i == 0:
+                # joy song to be added to playlist
+                temp_song = joy_tracks.at[0, 'id']
+                # drop the song from the songlist
+                joy_tracks.drop(0)
+                joy_tracks = joy_tracks.sample(frac=1).reset_index(drop=True)
+                # Add the retrieved song to the list of tracks
+                playlist_tracks.append(temp_song)
+                # Subtract after adding song to playlist output
+                songs_per_tone[i] -= 1
+                
+            elif songs_per_tone[i] > 0 and i == 1:
+                # anger song to be added to playlist
+                temp_song = anger_tracks.at[0, 'id']
+                # drop the song from the songlist
+                anger_tracks.drop(0)
+                # Shuffle anger_tracks
+                anger_tracks = anger_tracks.sample(frac=1).reset_index(drop=True)
+                # Add the retrieved song to the list of tracks
+                playlist_tracks.append(temp_song)
+                # Subtract after adding song to playlist output
+                songs_per_tone[i] -= 1
+                
+            elif songs_per_tone[i] > 0 and i == 2:
+                # sadness song to be added to playlist
+                temp_song = sad_tracks.at[0, 'id']
+                # drop the song from the songlist
+                sad_tracks.drop(0)
+                # Shuffle anger_tracks
+                sad_tracks = sad_tracks.sample(frac=1).reset_index(drop=True)
+                # Add the retrieved song to the list of tracks
+                playlist_tracks.append(temp_song)
+                # Subtract after adding song to playlist output
+                songs_per_tone[i] -= 1
+                
+            elif songs_per_tone[i] > 0 and i == 3:
+                # calm song to be added to playlist
+                temp_song = calm_tracks.at[0, 'id']
+                # drop the song from the songlist
+                calm_tracks.drop(0)
+                # Shuffle anger_tracks
+                calm_tracks = calm_tracks.sample(frac=1).reset_index(drop=True)
+                # Add the retrieved song to the list of tracks
+                playlist_tracks.append(temp_song)
+                # Subtract after adding song to playlist output
+                songs_per_tone[i] -= 1
+
+    return playlist_tracks
 
 
 def get_sentiment(username: str) -> dict:
