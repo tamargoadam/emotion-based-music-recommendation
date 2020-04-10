@@ -1,16 +1,14 @@
+import os
 import spotipy
 import random
-import json
 import pandas as pd
 import time
 
 
 def get_user_token(username: str, scope: str, redirect_uri: str) -> str:
     """get token for specified user via credentials"""
-    with open("../credentials/spotify_credentials.json", "r") as file:
-        creds = json.load(file)
-    return spotipy.util.prompt_for_user_token(username, scope, creds['CLIENT_ID'], creds['CLIENT_SECRET'],
-                                              redirect_uri)
+    return spotipy.util.prompt_for_user_token(username, scope, os.environ['SPOTIFY_CLIENT_ID'],
+                                              os.environ['SPOTIFY_CLIENT_SECRET'], redirect_uri)
 
 
 def authenticate_spotify(token: str) -> spotipy.Spotify:
@@ -133,9 +131,10 @@ def create_playlist(sp: spotipy.Spotify, tracks: list, playlist_name: str, amoun
     random.shuffle(tracks)
     tracks_uri = []
     for track in tracks[0:amount]:
-        tracks_uri.append(track['uri'])
+        tracks_uri.append(track['id'])
     sp.user_playlist_add_tracks(user_id, playlist_id, tracks_uri)
     print('playlist, {}, has been generated.'.format(playlist_name))
+    return sp.playlist(playlist_id)["external_urls"]["spotify"]
 
 
 def write_to_csv(track_features):
@@ -200,7 +199,7 @@ def get_library(username: str, sp: spotipy.Spotify) -> list:
 
 username = 'atamargo'
 scope = 'user-library-read user-top-read playlist-modify-public user-follow-read'
-redirect_uri = 'https://localhost:8000/callback'
+redirect_uri = 'https://localhost:8080/callback'
 
 token = get_user_token(username, scope, redirect_uri)
 

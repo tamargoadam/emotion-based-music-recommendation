@@ -1,0 +1,24 @@
+
+.home {
+    padding: 20px;
+    min-height: 100%;
+    width: 100%;
+}
+
+.cardHeader {
+    padding: 16px;
+}
+
+.cardBody {
+    padding: 16px;
+}
+
+.textInput {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+
+.link {
+    margin-left: 20px;
+    margin-bottom: 10px;
+}

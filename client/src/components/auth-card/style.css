@@ -12,3 +12,13 @@
 .cardBody {
   padding: 16px;
 }
+
+.link {
+  margin-left: 20px;
+  margin-bottom: 10px;
+}
+
+.message {
+  margin-left: 20px;
+  margin-bottom: 10px;
+}
