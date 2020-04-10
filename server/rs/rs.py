@@ -90,7 +90,7 @@ def music_recommendation(username: str, num_songs: int) -> list:
     count1 = 50
     while(count1 > 0):
         for i in range(len(tone_scores)):
-            if songs_per_tone[i] = 0:
+            if songs_per_tone[i] == 0:
                 i += 1
             elif songs_per_tone[i] > 0 and i == 0:
                 # joy song to be added to playlist
@@ -163,7 +163,7 @@ def get_spotify_playlist_data(username: str) -> list:
 def check_key(dict, key) -> bool:
     if key in dict.keys():
         return True
-    else
+    else:
         return False
 
 def adjust_songs(tone_in: dict, song_num: int) -> dict:
