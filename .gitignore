@@ -143,3 +143,6 @@ dmypy.json
 server/endpoints/credentials/spotify_credentials.json
 server/endpoints/credentials/twitter_credentials.json
 server/endpoints/credentials/watson_credentials.json
+.vscode/settings.json
+.vscode/settings.json
+Pipfile.lock
