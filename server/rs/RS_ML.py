@@ -1,22 +1,31 @@
 from endpoints.watson import watson
 from endpoints.twitter import twitter
 from endpoints.spotify import spotify
-#import numpy as np
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn import preprocessing
+from sklearn.decomposition import PCA
+from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_val_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.utils.multiclass import unique_labels
 import pandas as pd
 import random
-#from __future__ import division, print_function, unicode_literals
+from __future__ import division, print_function, unicode_literals
 import os
 import math
 # Ignore useless warnings (see SciPy issue #5998)
-#np.random.seed()    #uses a random seed
+import warnings
+warnings.filterwarnings(action="ignore", message="^internal gelsd")
 
-#
-# RS.py
-#
-# music_recommendation(username, num_songs)
-#   returns a list of song ids to be used for populating a new playlist
-#
-# 
+np.random.seed()    #use a random seed
+
+import matplotlib.pyplot as plt
+from matplotlib import style
+style.use("ggplot")
+
+from sklearn.metrics import silhouette_score
 
 def music_recommendation(username: str, num_songs: int) -> list:
     #Method to call when a user needs a new playlist created based on the number of songs as input
@@ -140,6 +149,7 @@ def music_recommendation(username: str, num_songs: int) -> list:
                 songs_per_tone[i] -= 1
 
     return playlist_tracks
+
 
 def get_sentiment(username: str) -> dict:
     """generate list of sentiments corresponding to user's tweets"""
@@ -267,5 +277,79 @@ def show_vals(sad, joy, anger, calm):
     print("Anger: %d" %anger)
     print("Calm: %d" %calm)
 
+##
+##
+## Machine Learning Functions Below -- not entirely functional yet
+##
+##
+def normalize_data(username: str) -> list:
+    #preprocessing
+    songs = get_spotify_playlist_data(username)
+    songs = pd.read_dict()  #set the dataframe
+    #scale loudness
+    loudness = songs[['loudness']].values
+    min_max_scaler = preprocessing.MinMaxScaler()
+    loudness_scaled = min_max_scaler.fit_transform(loudness)
+    songs['loudness'] = pd.DataFrame(loudness_scaled)
+    #scale tempo
+    tempo = songs[['tempo']].values
+    min_max_scaler = preprocessing.MinMaxScaler()
+    tempo_scaled = min_max_scaler.fit_transform(loudness)
+    songs['tempo'] = pd.DataFrame(tempo_scaled)
+    #dont drop any data yet
+    return song_features 
+
+    # remove song names, artist and id before clustering
+    #song_features = songs.copy()
+    #song_features = song_features.drop(['id'],axis=1)
+    #songs_features = songs_features.drop(['name','artist','id'],axis=1)    #name and artist should not be within the data, i removed it
+    #return song_features 
+
+def ml_rec_alg(username: str) -> list: 
+    trackList = normalize_data(username) #gets all tracks and normalizes the data 
+    np.random.seed()
+    songs = pd.DataFrame.from_dict(trackList)
+    #songs.info()   #dictionary info
+    #songs.head()   #head of dict
+
+    #drop data not needed 
+    songs_features = songs.copy()
+    songs_features = songs_features.drop(['id','instrumentalness','acousticness','name','artist','liveness'],axis=1)
+
+    #find optimal k value   --not using yet
+    #op_k = find_optimal_k_value(songs_features)
+    #its probably going to be between 2-4, for now assume its 4 for the 4 basic emotions
+    op_k = 4
+    kmeans = KMeans(n_clusters=op_k)
+    kmeans.fit(songs_features)
+    #reduce data to 2 dimensions
+    y_kmeans = kmeans.predict(songs_features)
+    #pca = PCA(n_components=2)
+    #principal_components = pca.fit_transform(songs_features)
+    #pc = pd.DataFrame(principal_components)
+    X = songs_features
+    y = y_kmeans
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
+    rfc = RandomForestClassifier(n_estimators=100,criterion='gini')
+    rfc.fit(X_train,y_train)
+    # Predicting the Test set results
+    y_pred = rfc.predict(X_test)
+
+def find_optimal_k_value(songlist: list) -> int:
+    #given an input of data, return the best guess for an optimal K value
+    Sum_of_squared_distances = []
+    K = range(1,15)
+    for k in K:
+        km = KMeans(n_clusters=k)
+        km = km.fit(songs_features)
+        Sum_of_squared_distances.append(km.inertia_)
+    
+    for n_clusters in range(2,15):
+        clusterer = KMeans (n_clusters=n_clusters)
+        preds = clusterer.fit_predict(songs_features)
+        centers = clusterer.cluster_centers_
+
+    score = silhouette_score (songs_features, preds, metric='euclidean')
+    print ("For n_clusters = {}, silhouette score is {})".format(n_clusters, score))
 
 
