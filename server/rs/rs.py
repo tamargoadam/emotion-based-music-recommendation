@@ -1,34 +1,43 @@
 from endpoints.watson import watson
 from endpoints.twitter import twitter
 from endpoints.spotify import spotify
-#import numpy as np
 import pandas as pd
 import random
-#from __future__ import division, print_function, unicode_literals
 import os
 import math
-# Ignore useless warnings (see SciPy issue #5998)
-#np.random.seed()    #uses a random seed
 
 #
 # RS.py
-#
-# music_recommendation(username, num_songs)
+# rs(twitter_name, spotify_name, num_songs)
 #   returns a list of song ids to be used for populating a new playlist
-#
-# 
 
-def music_recommendation(username: str, num_songs: int) -> list:
-    #Method to call when a user needs a new playlist created based on the number of songs as input
-
-    #sentiment = user sentiment results from analyzing tweets
-    sentiment = get_tones(username)  
-    #per_song = list of each song type to recommend in final playlist
-    per_song = adjust_songs(sentiment, num_songs) 
-    #feature_data = list of tracks with feature data included
-    feature_data = get_spotify_playlist_data(username)  
-    #using pandas dataframe to manipulate songs
+    
+def rs(twitter_name: str, spotify_name: str, num_songs: int):
+    # Method to call when a user needs a new playlist created based on the number of songs as input
+    
+    #sentiment scores
+    tones = get_tones(twitter_name) # {'joy': 0.617353, 'anger': 0.542552}
+    #songs per emotion to be added to playlist
+    per_song = adjust_songs(tones, num_songs) # {'anger': 24, 'joy': 26}
+    
+    #get spotify auth
+    scope = 'user-library-read user-top-read playlist-modify-public user-follow-read'
+    redirect_uri = 'https://localhost:8000/callback'
+    token = spotify.get_user_token(spotify_name, scope, redirect_uri) #spotify.
+    if token:
+        print('Success, got spotify token')
+    else:
+        print("Cant get token for ", spotify_name)
+    sp = spotify.authenticate_spotify(token) #spotify.
+    feature_data = spotify.get_all_songs(spotify_name, sp) #spotify.
+    feature_data = spotify.get_tracks_with_features(feature_data, sp) #spotify.
+            
+    # list of track ids to be added to a playlist at the end of the algorithm
+    playlist_tracks = []  
+    
+    # using pandas dataframe to manipulate songs
     df = pd.DataFrame.from_dict(feature_data)
+
     #joy_tracks
     joy_tracks = df.copy()
     joy_tracks = joy_tracks.drop(['speechiness','instrumentalness','liveness','acousticness','name','artist','loudness','tempo','danceability'], axis=1)
@@ -77,21 +86,21 @@ def music_recommendation(username: str, num_songs: int) -> list:
         tone_scores[3] = tones['calm']
 
     #fill tone_songs
-    if 'joy' in tone_songs.keys():
-        songs_per_tone[0] = tone_songs['joy']
-    if 'anger' in tone_songs.keys():
-        songs_per_tone[1] = tone_songs['anger']
-    if 'sadness' in tone_songs.keys():
-        songs_per_tone[2] = tone_songs['sadness']
-    if 'calm' in tone_songs.keys():
-        songs_per_tone[3] = tone_songs['calm']
-
-    playlist_tracks = []
-    count1 = 50
+    if 'joy' in per_song.keys():
+        songs_per_tone[0] = per_song['joy']
+    if 'anger' in per_song.keys():
+        songs_per_tone[1] = per_song['anger']
+    if 'sadness' in per_song.keys():
+        songs_per_tone[2] = per_song['sadness']
+    if 'calm' in per_song.keys():
+        songs_per_tone[3] = per_song['calm']
+    
+    #loop, only decrementing the counter when a song is added to playlist__tracks list of ids
+    count1 = num_songs
     while(count1 > 0):
-        for i in range(len(tone_scores)):
-            if songs_per_tone[i] == 0:
-                i += 1
+        for i in range(len(tone_scores)):   #repeatedly loop through each song type
+            if songs_per_tone[i] == 0: #no songs to add of this emotion
+                i += 1      # skip to next song type in list
             elif songs_per_tone[i] > 0 and i == 0:
                 # joy song to be added to playlist
                 temp_song = joy_tracks.at[0, 'id']
@@ -102,7 +111,9 @@ def music_recommendation(username: str, num_songs: int) -> list:
                 playlist_tracks.append(temp_song)
                 # Subtract after adding song to playlist output
                 songs_per_tone[i] -= 1
-                
+                # Subtract from count1
+                count1 -= 1
+
             elif songs_per_tone[i] > 0 and i == 1:
                 # anger song to be added to playlist
                 temp_song = anger_tracks.at[0, 'id']
@@ -114,6 +125,8 @@ def music_recommendation(username: str, num_songs: int) -> list:
                 playlist_tracks.append(temp_song)
                 # Subtract after adding song to playlist output
                 songs_per_tone[i] -= 1
+                # Subtract from count1
+                count1 -= 1
                 
             elif songs_per_tone[i] > 0 and i == 2:
                 # sadness song to be added to playlist
@@ -126,6 +139,8 @@ def music_recommendation(username: str, num_songs: int) -> list:
                 playlist_tracks.append(temp_song)
                 # Subtract after adding song to playlist output
                 songs_per_tone[i] -= 1
+                # Subtract from count1
+                count1 -= 1
                 
             elif songs_per_tone[i] > 0 and i == 3:
                 # calm song to be added to playlist
@@ -138,26 +153,34 @@ def music_recommendation(username: str, num_songs: int) -> list:
                 playlist_tracks.append(temp_song)
                 # Subtract after adding song to playlist output
                 songs_per_tone[i] -= 1
+                # Subtract from count1
+                count1 -= 1
 
-    return playlist_tracks
+    #return playlist_tracks
 
-def get_sentiment(username: str) -> dict:
+    #create a playlist instead of returning the list of playlist tracks
+    out = spotify.create_playlist(sp, playlist_tracks, "Emotion-Based Recommendations")
+    return out
+    
+    
+def get_tones(username: str) -> dict:
     """generate list of sentiments corresponding to user's tweets"""
-    sentiment_data = watson.get_sentiment(twitter.get_tweets_by_user(username))
-    tones = watson.format_sentiment(sentiment_data)
+    sentiment_data = watson.get_sentiment(twitter.get_tweets_by_user(username)) #watson. twitter.
+    tones = watson.format_sentiment(sentiment_data) #watson.
     return tones
 
+""" unused helper functions
 def get_spotify_playlist_data(username: str) -> list:
     scope = 'user-library-read user-top-read playlist-modify-public user-follow-read'
     redirect_uri = 'https://localhost:8000/callback'
-    token = spotify.get_user_token(username, scope, redirect_uri)
+    token = spotify.get_user_token(username, scope, redirect_uri) #spotify.
     if token:
         print('Success, got spotify token')
     else:
         print("Cant get token for ", username)
-    sp = spotify.authenticate_spotify(token)
-    trackList = spotify.get_all_songs(username, sp)
-    trackList = spotify.get_tracks_with_features(trackList, sp)
+    sp = spotify.authenticate_spotify(token) #spotify.
+    trackList = spotify.get_all_songs(username, sp) #spotify.
+    trackList = spotify.get_tracks_with_features(trackList, sp) #spotify.
     return trackList
 
 def check_key(dict, key) -> bool:
@@ -165,7 +188,7 @@ def check_key(dict, key) -> bool:
         return True
     else:
         return False
-
+"""
 def adjust_songs(tone_in: dict, song_num: int) -> dict:
     #Returns a new dictionary containing the amount of songs of each tone to produce in the playlist
     temp_calm = 0
@@ -173,9 +196,9 @@ def adjust_songs(tone_in: dict, song_num: int) -> dict:
     temp_anger = 0
     temp_sad = 0
     length = len(tone_in)
-    print(length)
-    print(tone_in)
-    print(tone_in['joy'])
+    #print(length)
+    #print(tone_in)
+    #print(tone_in['joy'])
     count = 0
     if 'joy' in tone_in.keys():
         temp_joy = tone_in['joy']
@@ -266,6 +289,4 @@ def show_vals(sad, joy, anger, calm):
     print("Joy: %d" %joy)
     print("Anger: %d" %anger)
     print("Calm: %d" %calm)
-
-
 
