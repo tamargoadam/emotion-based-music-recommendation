@@ -1,8 +1,7 @@
 import os
 from ibm_watson import ToneAnalyzerV3
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
-from endpoints.twitter.twitter import *
-
+#from endpoints.twitter.twitter import *
 def get_tone_analyzer() -> ToneAnalyzerV3:
     authenticator = IAMAuthenticator(os.environ['WATSON_API_KEY'])
     tone_analyzer = ToneAnalyzerV3(
@@ -11,15 +10,26 @@ def get_tone_analyzer() -> ToneAnalyzerV3:
     tone_analyzer.set_service_url(os.environ['WATSON_URL'])
     return tone_analyzer
 
+""" # Used for testing
+def get_tone_analyzer() -> ToneAnalyzerV3:
+    with open("watson_credentials.json", "r") as file:
+        creds = json.load(file)
+        authenticator = IAMAuthenticator(creds['API_KEY'])
+        tone_analyzer = ToneAnalyzerV3(
+            version=creds['VERSION'],
+            authenticator=authenticator)
+        tone_analyzer.set_service_url(creds['URL'])
+    return tone_analyzer
+"""
 
 def get_sentiment(tweets: list) -> list:
     """tone analyzer api call from sentiment.json data"""
-    tweet_str = tweets_to_string(tweets)
+    tweet_str = tweets_to_string(tweets) 
     ret = get_tone_analyzer().tone(
             tone_input=tweet_str,
             content_type='text/plain',
             sentences=True).get_result()
-    #ret = format_sentiment(ret)
+    #ret = format_sentiment(ret) #function to clean output of get_sentiment(), make call separately
     return ret
 
 def sort_tones(d1: dict) -> dict:
@@ -105,7 +115,7 @@ def format_sentiment(xd):
 def tweets_to_string(tweets: list):
     #converts a list of tweets to a single string without "RT "s and periods in between tweets.
     ret = ""
-    for i in tweet_test: 
+    for i in tweets: 
         rts = i[0]
         rts += i[1]
         rts += i[2]
