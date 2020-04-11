@@ -1,6 +1,6 @@
-from endpoints.watson import watson
-from endpoints.twitter import twitter
-from endpoints.spotify import spotify
+from server.endpoints.watson import watson
+from server.endpoints.twitter import twitter
+from server.endpoints.spotify import spotify
 import pandas as pd
 import random
 import os
