@@ -170,6 +170,7 @@ def get_tones(username: str) -> dict:
     """generate list of sentiments corresponding to user's tweets"""
     sentiment_data = watson.get_sentiment(twitter.get_tweets_by_user(username)) #watson. twitter.
     tones = watson.format_sentiment(sentiment_data) #watson.
+    tones = watson.sort_tones(tones)
     return tones
 
 def adjust_songs(tone_in: dict, song_num: int) -> dict:
