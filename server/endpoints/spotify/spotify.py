@@ -6,13 +6,13 @@ import time
 
 
 def get_user_token(username: str, scope: str, redirect_uri: str) -> str:
-    """get token for specified user via credentials"""
+    #get token for specified user via credentials
     return spotipy.util.prompt_for_user_token(username, scope, os.environ['SPOTIFY_CLIENT_ID'],
                                               os.environ['SPOTIFY_CLIENT_SECRET'], redirect_uri)
 
 
 def authenticate_spotify(token: str) -> spotipy.Spotify:
-    """authenticates Spotify account via the passed in token"""
+    #authenticates Spotify account via the passed in token
     print('...connecting to Spotify')
     sp = spotipy.Spotify(auth=token)
     return sp
@@ -107,7 +107,7 @@ def get_top_and_similar_artists(sp: spotipy.Spotify, amount: int = 20) -> list:
 
 
 def get_artists_top_tracks(sp: spotipy.Spotify, artists_uri: list, amount: int = 50) -> list:
-    """compiles unordered list of top tracks made by artists in artists_uri of length amount"""
+    #compiles list of top tracks made by artists in artists_uri of length amount
     print('...getting top tracks for each artist')
     tracks = []
     for artist in artists_uri:
@@ -115,9 +115,6 @@ def get_artists_top_tracks(sp: spotipy.Spotify, artists_uri: list, amount: int =
         top_tracks_data = all_top_tracks_data['tracks']
         for track_data in top_tracks_data:
             tracks.append(dict(id=track_data['id'], artist=track_data['artists'][0]['name'], name=track_data['name']))
-            #tracks.append(track_data)
-    #random.shuffle(tracks)
-    #tracks = tracks[0:amount]
     return tracks
 
 
@@ -130,11 +127,17 @@ def create_playlist(sp: spotipy.Spotify, tracks: list, playlist_name: str, amoun
     playlist_id = sp.user_playlist_create(user_id, playlist_name)["id"]
     random.shuffle(tracks)
     tracks_uri = []
-    for track in tracks[0:amount]:
-        tracks_uri.append(track['id'])
+    for track in tracks:
+        tracks_uri.append(track)
     sp.user_playlist_add_tracks(user_id, playlist_id, tracks_uri)
     print('playlist, {}, has been generated.'.format(playlist_name))
     return sp.playlist(playlist_id)["external_urls"]["spotify"]
+
+    #for track in tracks[0:amount]:
+        #tracks_uri.append(track['id'])
+    #sp.user_playlist_add_tracks(user_id, playlist_id, tracks_uri)
+    #print('playlist, {}, has been generated.'.format(playlist_name))
+    #return sp.playlist(playlist_id)["external_urls"]["spotify"]
 
 
 def write_to_csv(track_features):
