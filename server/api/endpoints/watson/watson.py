@@ -2,6 +2,7 @@ import os
 from ibm_watson import ToneAnalyzerV3
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 #from endpoints.twitter.twitter import *
+
 def get_tone_analyzer() -> ToneAnalyzerV3:
     authenticator = IAMAuthenticator(os.environ['WATSON_API_KEY'])
     tone_analyzer = ToneAnalyzerV3(

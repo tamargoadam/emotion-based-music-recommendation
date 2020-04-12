@@ -2,6 +2,9 @@
 
 ## RS.py
 ## Following the Flow:
+##### playlist_rs(feature_data, tones, per_song, num_song)
+    Returns a list of track ids to be used to create a playlist from the recommendation algorithm
+    
 ##### rs(twitter_name, spotify_name, num_songs) 
     Performs sentiment analysis of user's most recent 200 tweets.
     Collects spotify tracks saved in library, playlists, and the top tracks from favorite artists and similar artists.

@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify, Response
-from server.endpoints.twitter import validate_user_exists
-from server.endpoints.spotify import spotify
-#from endpoints.watson.watson import watson
-from server.endpoints.watson import watson
-from server.rs import rs
+from endpoints.twitter import twitter
+from endpoints.spotify import spotify
+from endpoints.watson import watson
+from rs import rs
+
+
 
 app = Flask(__name__)
 
@@ -25,7 +26,7 @@ def get_twitter_username():
         response = Response('No username provided.', 400)
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
-    if validate_user_exists(username):
+    if twitter.validate_user_exists(username):
         response = Response(username, 201)
         response.headers['Access-Control-Allow-Origin'] = '*'
         return response
@@ -40,9 +41,8 @@ def playlist():
     twitter_username = request.args.get('user')
     spotify_token = request.args.get('token')
     playlist_name = request.args.get('name')
-    
-    # RS
     #num_songs = request.args.get('num_songs')
+    
     num_songs = 50
 
     tones = rs.get_tones(twitter_username)
@@ -50,12 +50,13 @@ def playlist():
 
     # RS Playlist
     sp = spotify.authenticate_spotify(spotify_token)
-    song_data = spotify.get_all_songs(sp)
+    username = sp.me()['id']
+    #print(username)
+    song_data = spotify.get_all_songs(username, sp)
     song_data = spotify.get_tracks_with_features(song_data, sp)
     # List of Track ID's
-    song_data = rs(song_data, tones, per_song, num_songs)
+    song_data = rs.playlist_rs(song_data, tones, per_song, num_songs)
     playlist = spotify.create_playlist(sp, song_data, playlist_name)
-
     
 
     """BEGIN EXAMPLE PLAYLIST PLACEHOLDER
