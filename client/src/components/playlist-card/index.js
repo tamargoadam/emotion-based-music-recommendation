@@ -5,8 +5,8 @@ import 'preact-material-components/Button/style.css';
 import style from './style';
 import {Button, TextField} from "preact-material-components";
 
-function getPlaylistPath(username, token, name) {
-    return 'http://127.0.0.1:5000/playlist?user=' + username + '&token=' + token + '&name=' + name;
+function getPlaylistPath(username, token, name, songs) {
+    return 'http://127.0.0.1:5000/playlist?user=' + username + '&token=' + token + '&name=' + name + '&songs=' + songs;
 }
 
 export default class PlaylistCard extends Component {
@@ -17,13 +17,14 @@ export default class PlaylistCard extends Component {
             twitter_username: props.twitter_username,
             spotify_token: props.spotify_token,
             playlist_name: "",
+            num_songs: 50,
             playlist_url: ""
         };
     }
 
     toggleButtonState = () => {
-        if(this.state.playlist_name) {
-            fetch(getPlaylistPath(this.state.twitter_username, this.state.spotify_token, this.state.playlist_name))
+        if(this.state.playlist_name && this.state.num_songs) {
+            fetch(getPlaylistPath(this.state.twitter_username, this.state.spotify_token, this.state.playlist_name, this.state.num_songs))
                 .then(function (response) {
                     return response.text();
                 })
@@ -34,8 +35,8 @@ export default class PlaylistCard extends Component {
                     console.log(error);
                 });
         }
-        else{
-            alert("Please enter a name for your playlist.")
+        else {
+            alert("Please enter a name for your playlist, or a number for the amount of songs.")
         }
     }
 
@@ -50,6 +51,15 @@ export default class PlaylistCard extends Component {
                         onKeyUp={e => {
                             this.setState({
                                 playlist_name: e.target.value
+                            });
+                        }}
+                    />
+                </div>
+                <div>
+                    <TextField defaultValue={50} class={style.testInput}label="Playlist Song Amount"
+                        onKeyUp={e => {
+                            this.setState({
+                                num_songs: e.target.value
                             });
                         }}
                     />

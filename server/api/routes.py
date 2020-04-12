@@ -41,9 +41,11 @@ def playlist():
     twitter_username = request.args.get('user')
     spotify_token = request.args.get('token')
     playlist_name = request.args.get('name')
-    #num_songs = request.args.get('num_songs')
-    
-    num_songs = 50
+    num_songs = request.args.get('songs')
+    num_songs = int(num_songs)
+    #print("num songs is ")
+    #print(num_songs)
+    #num_songs = 50
 
     tones = rs.get_tones(twitter_username)
     per_song = rs.adjust_songs(tones, num_songs)

@@ -173,16 +173,15 @@ def get_tones(username: str) -> dict:
     tones = watson.sort_tones(tones)
     return tones
 
-def adjust_songs(tone_in: dict, song_num: int) -> dict:
+def adjust_songs(tone_in: dict, nums: int) -> dict:
     #Returns a new dictionary containing the amount of songs of each tone to produce in the playlist
     temp_calm = 0
     temp_joy = 0
     temp_anger = 0
     temp_sad = 0
     length = len(tone_in)
-    print(length)
-    print(tone_in)
-    #print(tone_in['joy'])
+    song_num = nums
+
     count = 0
     if 'joy' in tone_in.keys():
         temp_joy = tone_in['joy']
