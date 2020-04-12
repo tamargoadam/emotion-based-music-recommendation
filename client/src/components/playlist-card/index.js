@@ -56,7 +56,7 @@ export default class PlaylistCard extends Component {
                     />
                 </div>
                 <div>
-                    <TextField defaultValue={50} class={style.testInput}label="Playlist Song Amount"
+                <TextField defaultValue={50}class={style.textInput}label="Number of Songs (We recommend between 25-100)"
                         onKeyUp={e => {
                             this.setState({
                                 num_songs: e.target.value
