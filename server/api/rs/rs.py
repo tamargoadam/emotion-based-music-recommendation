@@ -41,6 +41,11 @@ def playlist_rs(feature_data, tones, per_song, num_songs):
     # using pandas dataframe to manipulate songs
     df = pd.DataFrame.from_dict(feature_data)
 
+    #all_tracks 
+    all_tracks = df.copy() 
+    all_tracks = all_tracks.drop(['speechiness','instrumentalness','liveness','acousticness','name','artist','loudness','tempo','danceability'], axis=1)
+    all_tracks = all_tracks.sample(frac=1).reset_index(drop=True)
+
     #joy_tracks
     joy_tracks = df.copy()
     joy_tracks = joy_tracks.drop(['speechiness','instrumentalness','liveness','acousticness','name','artist','loudness','tempo','danceability'], axis=1)
@@ -107,56 +112,68 @@ def playlist_rs(feature_data, tones, per_song, num_songs):
             elif songs_per_tone[i] > 0 and i == 0:
                 # joy song to be added to playlist
                 temp_song = joy_tracks.at[0, 'id']
-                # drop the song from the songlist
+                # CHECK IF ITS ALREADY IN PLAYLIST!!!!
+                if temp_song not in playlist_tracks:
+                    #if its not in playlist, then add it to playlist!
+                    playlist_tracks.append(temp_song)
+                    songs_per_tone[i] -= 1
+                # if its in the playlist or not, either way we must now shuffle and drop that element and keep looping
                 joy_tracks.drop(0)
                 joy_tracks = joy_tracks.sample(frac=1).reset_index(drop=True)
-                # Add the retrieved song to the list of tracks
-                playlist_tracks.append(temp_song)
-                # Subtract after adding song to playlist output
-                songs_per_tone[i] -= 1
                 # Subtract from count1
                 count1 -= 1
 
             elif songs_per_tone[i] > 0 and i == 1:
                 # anger song to be added to playlist
                 temp_song = anger_tracks.at[0, 'id']
-                # drop the song from the songlist
+                # CHECK IF ITS ALREADY IN PLAYLIST!!!!
+                if temp_song not in playlist_tracks:
+                    #if its not in playlist, then add it to playlist!
+                    playlist_tracks.append(temp_song)
+                    songs_per_tone[i] -= 1
+                # if its in the playlist or not, either way we must now shuffle and drop that element and keep looping
                 anger_tracks.drop(0)
-                # Shuffle anger_tracks
                 anger_tracks = anger_tracks.sample(frac=1).reset_index(drop=True)
-                # Add the retrieved song to the list of tracks
-                playlist_tracks.append(temp_song)
-                # Subtract after adding song to playlist output
-                songs_per_tone[i] -= 1
                 # Subtract from count1
                 count1 -= 1
                 
             elif songs_per_tone[i] > 0 and i == 2:
-                # sadness song to be added to playlist
+                # sad song to be added to playlist
                 temp_song = sad_tracks.at[0, 'id']
-                # drop the song from the songlist
+                # CHECK IF ITS ALREADY IN PLAYLIST!!!!
+                if temp_song not in playlist_tracks:
+                    #if its not in playlist, then add it to playlist!
+                    playlist_tracks.append(temp_song)
+                    songs_per_tone[i] -= 1
+                # if its in the playlist or not, either way we must now shuffle and drop that element and keep looping
                 sad_tracks.drop(0)
-                # Shuffle anger_tracks
                 sad_tracks = sad_tracks.sample(frac=1).reset_index(drop=True)
-                # Add the retrieved song to the list of tracks
-                playlist_tracks.append(temp_song)
-                # Subtract after adding song to playlist output
-                songs_per_tone[i] -= 1
                 # Subtract from count1
                 count1 -= 1
                 
             elif songs_per_tone[i] > 0 and i == 3:
                 # calm song to be added to playlist
                 temp_song = calm_tracks.at[0, 'id']
-                # drop the song from the songlist
+                # CHECK IF ITS ALREADY IN PLAYLIST!!!!
+                if temp_song not in playlist_tracks:
+                    #if its not in playlist, then add it to playlist!
+                    playlist_tracks.append(temp_song)
+                    songs_per_tone[i] -= 1
+                # if its in the playlist or not, either way we must now shuffle and drop that element and keep looping
                 calm_tracks.drop(0)
-                # Shuffle anger_tracks
                 calm_tracks = calm_tracks.sample(frac=1).reset_index(drop=True)
-                # Add the retrieved song to the list of tracks
-                playlist_tracks.append(temp_song)
-                # Subtract after adding song to playlist output
-                songs_per_tone[i] -= 1
                 # Subtract from count1
+                count1 -= 1
+            
+            elif (songs_per_tone[0] == 0) and (songs_per_tone[1] == 0) and (songs_per_tone[2] == 0) and (songs_per_tone[3] == 0):
+                #there are no emotion songs left to be added to the playlist
+                #fill the rest of the playlist with preferred songs randomly
+                temp_song = all_tracks.at[0, 'id']
+                if temp_song not in playlist_tracks:
+                    playlist_tracks.append(temp_song)
+                    songs_per_tone[i] -= 1
+                all_tracks.drop(0)
+                all_tracks = all_tracks.sample(frac=1).reset_index(drop=True)
                 count1 -= 1
 
     return playlist_tracks

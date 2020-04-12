@@ -58,7 +58,7 @@ def get_all_tracks_from_playlists(username: str, sp: spotipy.Spotify) -> list:
     trackList = []
     for playlist in playlists['items']:
         if playlist['owner']['id'] == username:
-            print(playlist['name'], ' no. of tracks: ', playlist['tracks']['total'])
+            #print(playlist['name'], ' no. of tracks: ', playlist['tracks']['total'])
             results = sp.user_playlist(username, playlist['id'], fields="tracks,next")
             tracks = results['tracks']
             for i, item in enumerate(tracks['items']):
@@ -83,7 +83,7 @@ def get_top_artists(sp: spotipy.Spotify, amount: int = 20) -> list:
     return artists_uri
 
 
-def get_top_and_similar_artists(sp: spotipy.Spotify, amount: int = 20) -> list:
+def get_top_and_similar_artists(sp: spotipy.Spotify, amount: int = 30) -> list:
     """compiles a list of top and similar artists of length amount"""
     print('...getting top and similar artists')
     artists_name = []
