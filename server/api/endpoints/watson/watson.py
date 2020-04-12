@@ -117,10 +117,8 @@ def tweets_to_string(tweets: list):
     #converts a list of tweets to a single string without "RT "s and periods in between tweets.
     ret = ""
     for i in tweets: 
-        rts = i[0]
-        rts += i[1]
-        rts += i[2]
-        if(rts == "RT "):
+        rts = i[0:2]
+        if (rts == "RT "):
             x = len(i)
             i = i[3:x]
         ret += i
