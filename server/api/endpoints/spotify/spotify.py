@@ -3,6 +3,7 @@ import spotipy
 import random
 import pandas as pd
 import time
+import math
 
 
 def get_user_token(username: str, scope: str, redirect_uri: str) -> str:
@@ -154,14 +155,26 @@ def show_tracks(tracks):
 
 def get_recent_tracks(username: str, sp: spotipy.Spotify) -> list:
     print('...getting the recent tracks from a user')
-    recent_tracks = []
-    afterTime = time.time()
-    print(afterTime)
+    ret = []
+    #afterTime = time.time()
     #afterTime = afterTime - 2629743  #one month ago
-    afterTime = afterTime - 604800 #one week ago
-    print(afterTime)
-    recent_tracks = sp.current_user_recently_played(after=afterTime)
-    return recent_tracks
+    #afterTime = afterTime - 604800 #one week ago
+    #afterTime = math.floor(afterTime)
+    recent_tracks = sp.current_user_recently_played()
+    for item in recent_tracks['items']:
+        track = item['track']
+        ret.append(dict(id=track['id'], artist=track['artists'][0]['name'], name=track['name']))
+    return ret
+
+def get_recent_artists(username: str, sp: spotipy.Spotify) -> list:
+    print('...getting the artists from recent user songs played')
+    artists_uri = []
+    recent_artists = sp.current_user_recently_played() 
+    for item in recent_artists['items']:
+        if recent_artists['uri'] not in artists_uri:
+            artists_uri.append(recent_artists['uri'])
+    return artists_uri
+
 
 def get_all_songs(username: str, sp: spotipy.Spotify) -> list:
     #Method which gets songs from library, playlists, and top artists and similar artists into 1 dict
@@ -169,14 +182,20 @@ def get_all_songs(username: str, sp: spotipy.Spotify) -> list:
     trackList = [] #returning list
     #get all songs from playlists
     playlists = get_all_tracks_from_playlists(username, sp)
-    #get all songs from library
-    library = get_library(username, sp)
-    #merge library and tracklist
-    trackList = merge_dicts(playlists, library)
+    #get all songs from library AKA trackList
+    trackList = get_library(username, sp)
+    #merge playlists with library tracks
+    trackList = merge_dicts(playlists, trackList)
     #get all songs from top artists and similar artists
     preferences = get_artists_top_tracks(sp, get_top_and_similar_artists(sp))
-    #merge lists again
     trackList = merge_dicts(preferences, trackList)
+    # NOT WORKING! get all recent songs
+    #recents = get_recent_tracks(username, sp)
+    #trackList = merge_dicts(recents, trackList)
+    # NOT WORKING! get top tracks from recently played artists
+    #recentArtists = get_recent_artists(username, sp)
+    #recentArtists = get_artists_top_tracks(sp, recentArtists)
+    #trackList = merge_dicts(recentArtists, trackList)
     return trackList
 
 def merge_dicts(list1: list, list2: list) -> list:
