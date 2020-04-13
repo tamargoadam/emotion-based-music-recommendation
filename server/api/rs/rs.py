@@ -184,10 +184,11 @@ def playlist_rs(feature_data, tones, per_song, num_songs):
     
 def get_tones(username: str) -> dict:
     """generate list of sentiments corresponding to user's tweets"""
-    sentiment_data = watson.get_sentiment(twitter.get_tweets_by_user(username)) #watson. twitter.
-    tones = watson.format_sentiment(sentiment_data) #watson.
-    tones = watson.sort_tones(tones)
-    return tones
+    tweet_data = twitter.get_all_tweets(username)
+    sentiment_data = watson.get_sentiment(tweet_data) #watson. twitter.
+    sentiment_data = watson.format_sentiment(sentiment_data) #watson.
+    sentiment_data = watson.sort_tones(sentiment_data)
+    return sentiment_data
 
 
 def adjust_songs(tone_in: dict, nums: int) -> dict:
@@ -200,6 +201,7 @@ def adjust_songs(tone_in: dict, nums: int) -> dict:
     song_num = nums
 
     count = 0
+    div = 0
     if 'joy' in tone_in.keys():
         temp_joy = tone_in['joy']
         count = count + 1
@@ -212,8 +214,11 @@ def adjust_songs(tone_in: dict, nums: int) -> dict:
     if 'calm' in tone_in.keys():
         temp_calm = tone_in['calm']
         count = count + 1
-    
-    div = 1 / count
+
+    if count > 0:
+        div = 1 / count
+    else: 
+        div = 1
     sum1 = 0
     
     list_vals = [0, 0, 0, 0]
