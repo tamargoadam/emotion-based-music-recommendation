@@ -1,7 +1,6 @@
 import os
 import tweepy
 import re
-# path = 'data/'
 
 
 def get_twitter_api() -> tweepy.API:
@@ -32,7 +31,8 @@ def get_tweets_by_user(username: str, num_tweets: int = 1) -> list:
     tweets = [tweet_data.text for tweet_data in tweets_data]
     return tweets[:num_tweets]
 
-#200 is maximum amount of tweets at a time
+
+# 200 is maximum amount of tweets at a time
 def get_all_tweets(username: str) -> list:
     api = get_twitter_api() 
     alltweets = api.user_timeline(screen_name = username, count=200)

@@ -1,16 +1,13 @@
 from endpoints.watson import watson
 from endpoints.twitter import twitter
-from endpoints.spotify import spotify
 import pandas as pd
-import random
-import os
 import math
 
-#
+
 # RS.py
 # rs(twitter_name, spotify_name, num_songs)
 #   returns a list of song ids to be used for populating a new playlist
-    #rs func
+#   rs func
 """ 
 def rs_playlist(twitter_name: str, spotify_name: str, num_songs: int):
     # Method to call when a user needs a new playlist created based on the number of songs as input
@@ -33,7 +30,9 @@ def rs_playlist(twitter_name: str, spotify_name: str, num_songs: int):
     sp = spotify.authenticate_spotify(token) #spotify.
     feature_data = spotify.get_all_songs(spotify_name, sp) #spotify.
     feature_data = spotify.get_tracks_with_features(feature_data, sp) #spotify.
-"""      
+"""
+
+
 def playlist_rs(feature_data, tones, per_song, num_songs):
     # list of track ids to be added to a playlist at the end of the algorithm
     playlist_tracks = []  
@@ -41,49 +40,49 @@ def playlist_rs(feature_data, tones, per_song, num_songs):
     # using pandas dataframe to manipulate songs
     df = pd.DataFrame.from_dict(feature_data)
 
-    #all_tracks 
+    # all_tracks
     all_tracks = df.copy() 
     all_tracks = all_tracks.drop(['speechiness','instrumentalness','liveness','acousticness','name','artist','loudness','tempo','danceability'], axis=1)
     all_tracks = all_tracks.sample(frac=1).reset_index(drop=True)
 
-    #joy_tracks
+    # joy_tracks
     joy_tracks = df.copy()
     joy_tracks = joy_tracks.drop(['speechiness','instrumentalness','liveness','acousticness','name','artist','loudness','tempo','danceability'], axis=1)
     joy_tracks = joy_tracks[joy_tracks['energy'] > 0.5]
     joy_tracks = joy_tracks[joy_tracks['valence'] > 0.5]
-    #shuffle joy_tracks
+    # shuffle joy_tracks
     joy_tracks = joy_tracks.sample(frac=1).reset_index(drop=True)
 
-    #anger_tracks
+    # anger_tracks
     anger_tracks = df.copy()
     anger_tracks = anger_tracks.drop(['speechiness','instrumentalness','liveness','acousticness','name','artist','loudness','tempo','danceability'], axis=1)
     anger_tracks = anger_tracks[anger_tracks['energy'] > 0.5]
     anger_tracks = anger_tracks[anger_tracks['valence'] < 0.5]
-    #shuffle anger_tracks
+    # shuffle anger_tracks
     anger_tracks = anger_tracks.sample(frac=1).reset_index(drop=True)
 
-    #sad_tracks
+    # sad_tracks
     sad_tracks = df.copy()
     sad_tracks = sad_tracks.drop(['speechiness','instrumentalness','liveness','acousticness','name','artist','loudness','tempo','danceability'], axis=1)
     sad_tracks = sad_tracks[sad_tracks['energy'] < 0.5]
     sad_tracks = sad_tracks[sad_tracks['valence'] < 0.5]
-    #shuffle sad_tracks
+    # shuffle sad_tracks
     sad_tracks = sad_tracks.sample(frac=1).reset_index(drop=True)
     
-    #calm_tracks
+    # calm_tracks
     calm_tracks = df.copy()
     calm_tracks = calm_tracks.drop(['speechiness','instrumentalness','liveness','acousticness','name','artist','loudness','tempo','danceability'], axis=1)
     calm_tracks = calm_tracks[calm_tracks['energy'] < 0.5]
     calm_tracks = calm_tracks[calm_tracks['valence'] > 0.5]
-    #shuffle calm_tracks
+    # shuffle calm_tracks
     calm_tracks = calm_tracks.sample(frac=1).reset_index(drop=True)
 
-    #check what tones have been calculated
+    # check what tones have been calculated
     tone_scores = [0, 0, 0, 0]
     songs_per_tone = [0, 0, 0, 0]
-                #joy[0],anger[1],sadness[2],calm[3]
+                # joy[0],anger[1],sadness[2],calm[3]
 
-    #fill tone_scores
+    # fill tone_scores
     if 'joy' in tones.keys():
         tone_scores[0] = tones['joy']
     if 'anger' in tones.keys():
@@ -93,7 +92,7 @@ def playlist_rs(feature_data, tones, per_song, num_songs):
     if 'calm' in tones.keys():
         tone_scores[3] = tones['calm']
 
-    #fill tone_songs
+    # fill tone_songs
     if 'joy' in per_song.keys():
         songs_per_tone[0] = per_song['joy']
     if 'anger' in per_song.keys():
@@ -103,7 +102,7 @@ def playlist_rs(feature_data, tones, per_song, num_songs):
     if 'calm' in per_song.keys():
         songs_per_tone[3] = per_song['calm']
     
-    #loop, only decrementing the counter when a song is added to playlist__tracks list of ids
+    # loop, only decrementing the counter when a song is added to playlist__tracks list of ids
     count1 = num_songs
     while(count1 > 0):
         for i in range(len(tone_scores)):   #repeatedly loop through each song type
@@ -128,7 +127,7 @@ def playlist_rs(feature_data, tones, per_song, num_songs):
                 temp_song = anger_tracks.at[0, 'id']
                 # CHECK IF ITS ALREADY IN PLAYLIST!!!!
                 if temp_song not in playlist_tracks:
-                    #if its not in playlist, then add it to playlist!
+                    # if its not in playlist, then add it to playlist!
                     playlist_tracks.append(temp_song)
                     songs_per_tone[i] -= 1
                 # if its in the playlist or not, either way we must now shuffle and drop that element and keep looping
@@ -142,7 +141,7 @@ def playlist_rs(feature_data, tones, per_song, num_songs):
                 temp_song = sad_tracks.at[0, 'id']
                 # CHECK IF ITS ALREADY IN PLAYLIST!!!!
                 if temp_song not in playlist_tracks:
-                    #if its not in playlist, then add it to playlist!
+                    # if its not in playlist, then add it to playlist!
                     playlist_tracks.append(temp_song)
                     songs_per_tone[i] -= 1
                 # if its in the playlist or not, either way we must now shuffle and drop that element and keep looping
@@ -156,7 +155,7 @@ def playlist_rs(feature_data, tones, per_song, num_songs):
                 temp_song = calm_tracks.at[0, 'id']
                 # CHECK IF ITS ALREADY IN PLAYLIST!!!!
                 if temp_song not in playlist_tracks:
-                    #if its not in playlist, then add it to playlist!
+                    # if its not in playlist, then add it to playlist!
                     playlist_tracks.append(temp_song)
                     songs_per_tone[i] -= 1
                 # if its in the playlist or not, either way we must now shuffle and drop that element and keep looping
@@ -166,8 +165,8 @@ def playlist_rs(feature_data, tones, per_song, num_songs):
                 count1 -= 1
             
             elif (songs_per_tone[0] == 0) and (songs_per_tone[1] == 0) and (songs_per_tone[2] == 0) and (songs_per_tone[3] == 0):
-                #there are no emotion songs left to be added to the playlist
-                #fill the rest of the playlist with preferred songs randomly
+                # there are no emotion songs left to be added to the playlist
+                # fill the rest of the playlist with preferred songs randomly
                 temp_song = all_tracks.at[0, 'id']
                 if temp_song not in playlist_tracks:
                     playlist_tracks.append(temp_song)
@@ -178,9 +177,9 @@ def playlist_rs(feature_data, tones, per_song, num_songs):
 
     return playlist_tracks
 
-    #create a playlist instead of returning the list of playlist tracks
-    #out = spotify.create_playlist(sp, playlist_tracks, "Emotion-Based Recommendations")
-    #return out
+    # create a playlist instead of returning the list of playlist tracks
+    # out = spotify.create_playlist(sp, playlist_tracks, "Emotion-Based Recommendations")
+    # return out
     
     
 def get_tones(username: str) -> dict:
@@ -191,8 +190,9 @@ def get_tones(username: str) -> dict:
     sentiment_data = watson.sort_tones(sentiment_data)
     return sentiment_data
 
+
 def adjust_songs(tone_in: dict, nums: int) -> dict:
-    #Returns a new dictionary containing the amount of songs of each tone to produce in the playlist
+    # Returns a new dictionary containing the amount of songs of each tone to produce in the playlist
     temp_calm = 0
     temp_joy = 0
     temp_anger = 0
@@ -222,9 +222,9 @@ def adjust_songs(tone_in: dict, nums: int) -> dict:
     sum1 = 0
     
     list_vals = [0, 0, 0, 0]
-    #joy, anger, sad, calm
+    # joy, anger, sad, calm
     
-    #getsum1
+    # getsum1
     if temp_joy > 0:
         temp_joy *= song_num
         temp_joy *= div
@@ -250,33 +250,33 @@ def adjust_songs(tone_in: dict, nums: int) -> dict:
         list_vals[3] = temp_calm
         sum1 += temp_calm
     
-    #show_vals(temp_sad, temp_joy, temp_anger, temp_calm)
+    # show_vals(temp_sad, temp_joy, temp_anger, temp_calm)
     
-    #showing vals for testing
-    #for i in list_vals:
-        #print(i)
+    # showing vals for testing
+    # for i in list_vals:
+       # print(i)
         
-    #sum1 vs song_num
+    # sum1 vs song_num
     if sum1 < song_num:
         while sum1 < song_num:
             for i in range(len(list_vals)):
-                if(list_vals[i] == 0):
+                if list_vals[i] == 0:
                     i += 1
                 else:
                     list_vals[i] = list_vals[i] + 1
                     sum1 += 1
-    #highly unlikely sum1 > song_num
+    # highly unlikely sum1 > song_num
     if sum1 > song_num:
         print("ERROR: Exception, account for this case")
     
-    #showing vals for testing    
-    #for i in list_vals:
+    # showing vals for testing
+    # for i in list_vals:
         #print(i)
         
-    #list_val[joy, anger, sad, calm]
+    # list_val[joy, anger, sad, calm]
     ret_dic = tone_in.copy()
       
-    #update the output dictionary with new values
+    # update the output dictionary with new values
     if 'joy' in ret_dic.keys():
         ret_dic['joy'] = list_vals[0]
     if 'anger' in ret_dic.keys():
@@ -287,8 +287,9 @@ def adjust_songs(tone_in: dict, nums: int) -> dict:
         ret_dic['calm'] = list_vals[3]
         
     return ret_dic
-    
-    #function for testing
+
+
+# function for testing
 def show_vals(sad, joy, anger, calm):
     print("Sad: %d" %sad)
     print("Joy: %d" %joy)

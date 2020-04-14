@@ -1,9 +1,7 @@
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, Response
 from endpoints.twitter import twitter
 from endpoints.spotify import spotify
-from endpoints.watson import watson
 from rs import rs
-
 
 
 app = Flask(__name__)
