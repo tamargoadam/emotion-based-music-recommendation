@@ -169,10 +169,12 @@ def get_recent_tracks(username: str, sp: spotipy.Spotify) -> list:
 def get_recent_artists(username: str, sp: spotipy.Spotify) -> list:
     print('...getting the artists from recent user songs played')
     artists_uri = []
-    recent_artists = sp.current_user_recently_played() 
+    recent_artists = sp.current_user_recently_played()
     for item in recent_artists['items']:
-        if recent_artists['uri'] not in artists_uri:
-            artists_uri.append(recent_artists['uri'])
+        track = item['track']
+        for artist in track['artists']:
+            if artist['uri'] not in artists_uri:
+                artists_uri.append(artist['uri'])
     return artists_uri
 
 
@@ -190,12 +192,12 @@ def get_all_songs(username: str, sp: spotipy.Spotify) -> list:
     preferences = get_artists_top_tracks(sp, get_top_and_similar_artists(sp))
     trackList = merge_dicts(preferences, trackList)
     # NOT WORKING! get all recent songs
-    #recents = get_recent_tracks(username, sp)
-    #trackList = merge_dicts(recents, trackList)
+    recents = get_recent_tracks(username, sp)
+    trackList = merge_dicts(recents, trackList)
     # NOT WORKING! get top tracks from recently played artists
-    #recentArtists = get_recent_artists(username, sp)
-    #recentArtists = get_artists_top_tracks(sp, recentArtists)
-    #trackList = merge_dicts(recentArtists, trackList)
+    recentArtists = get_recent_artists(username, sp)
+    recentArtists = get_artists_top_tracks(sp, recentArtists)
+    trackList = merge_dicts(recentArtists, trackList)
     return trackList
 
 def merge_dicts(list1: list, list2: list) -> list:

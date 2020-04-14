@@ -9,10 +9,11 @@ export const authEndpoint = 'https://accounts.spotify.com/authorize?';
 const clientId = "2c505498d4de4226a5749df64d69d1a6";
 const redirectUri = "http://localhost:8080";
 const scopes = [
-    "user-library-read",
-    "user-top-read",
-    "playlist-modify-public",
-    "user-follow-read"
+  "user-library-read",
+  "user-top-read",
+  "playlist-modify-public",
+  "user-follow-read",
+  "user-read-recently-played"
 ];
 
 const hash = window.location.hash
