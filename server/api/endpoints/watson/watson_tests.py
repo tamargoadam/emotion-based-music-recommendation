@@ -1,21 +1,18 @@
 import json
-import os
-from os.path import join
 from ibm_watson import ToneAnalyzerV3
-from ibm_watson.tone_analyzer_v3 import ToneInput
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
 
-#Authentication Method
+# Authentication Method
 with open("../credentials/watson_credentials.json", "r") as file:
         creds = json.load(file)
         authenticator = IAMAuthenticator(creds['API_KEY'])
         tone_analyzer = ToneAnalyzerV3(
-        version=creds['VERSION'],
-        authenticator=authenticator)
+                version=creds['VERSION'],
+                authenticator=authenticator)
         tone_analyzer.set_service_url(creds['URL'])
 
-#Start of Tests -- Try not to waste all of our API calls!
-#Uncomment if you wish to run the test functions!
+# Start of Tests -- Try not to waste all of our API calls!
+# Uncomment if you wish to run the test functions!
 print('Uncomment the tests in the code, then run again. This is to prevent excess API calls.')
 """
 print("\ntone_chat() example 1:\n")

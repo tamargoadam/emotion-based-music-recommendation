@@ -1,28 +1,35 @@
 # Music Recommendation System Files
 
 ## RS.py
-##### get_sentiment(user_name):
-    Input: (twitter_screen_name)
-    Output: (sentiment scores for a user)
-    What it does: Given a specific user as input, it gets that user's sentiment.
+## Following the Flow:
+##### playlist_rs(feature_data, tones, per_song, num_song)
+    Returns a list of track ids to be used to create a playlist from the recommendation algorithm
     
-##### get_music_pref_features(user_name):
-    Input: (twitter_screen_name)
-    Output: (audio features for several tracks)
-    What it does: For a user, we will get audio analysis for several song tracks.
+##### rs(twitter_name, spotify_name, num_songs) 
+    Performs sentiment analysis of user's most recent 200 tweets.
+    Collects spotify tracks saved in library, playlists, and the top tracks from favorite artists and similar artists.
+    Identifies user emotion and weighs the amount of songs per emotion to populate the playlist with.
+    Fills a playlist with music recommendations predicting a users preferences based on their predicted emotions.
 
-    What song tracks? We will consider consider 50 songs from a user's music preferences, and we will consider 50 songs that is similar to the user's music preferences. 
+    Predict if a user is: Joyful, Angry, Sad, Calm.
+    Based on these predictions recommend songs that are of these emotions based on the collected songs valence and energy. 
 
-##### analyze_music_features(user_name):
-    Input: (twitter_screen_name)
-    Output: (aggregate music feature scores)
-    What it does: For a user, we will analyze the mean values of the music features. Valence, speechiness, liveness, instrumentalness, energy, danceability and acousticness. 
-    
-##### compare_data():
-    compares sentiment and music feature data
+##### get_tones(user_name):
+    Input: twitter_name
+    Output: dictionary of document tones analyzed by watson
+
+##### adjust_songs(dict, int):
+    Input: a dictionary of the tone scores retrieved from get_tones()
+    Input2: the number of songs requested to be in the final playlist
+    Output: the number of songs per tone score to populate in the final playlist.
+
+##### show_vals(int, int, int, int): helper function
+    Inputs: [sad, joy, anger, calm]
+    Output: printing each score to screen
 
 ##### General purpose tones given:
     Anger, Fear, Joy, Sadness, Analytical, Confident, Tentative
+    Confidence scores from 0-1.
 
 ##### General music features given:
     Acousticness: (0-1 confidence measure), 1 represents high confidence the track is acoustic.

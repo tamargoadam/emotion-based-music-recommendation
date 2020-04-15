@@ -5,13 +5,13 @@ import pandas as pd
 
 
 def get_user_token(username: str, scope: str, redirect_uri: str) -> str:
-    """get token for specified user via credentials"""
+    # get token for specified user via credentials
     return spotipy.util.prompt_for_user_token(username, scope, os.environ['SPOTIFY_CLIENT_ID'],
                                               os.environ['SPOTIFY_CLIENT_SECRET'], redirect_uri)
 
 
 def authenticate_spotify(token: str) -> spotipy.Spotify:
-    """authenticates Spotify account via the passed in token"""
+    # authenticates Spotify account via the passed in token
     print('...connecting to Spotify')
     sp = spotipy.Spotify(auth=token)
     return sp
@@ -29,16 +29,15 @@ def get_track_features(track_id: str, sp: spotipy.Spotify):
 def get_tracks_with_features(tracks: list, sp: spotipy.Spotify) -> list:
     """return list of dicts with track info and features"""
     tracks_with_features = []
-
     for track in tracks:
-        print(track)
+        # print(track)
         features = get_track_features(track['id'], sp)
         if features:
             f = features[0]
             tracks_with_features.append(dict(
-                                            name=track['name'],
-                                            artist=track['artists'][0]['name'],
                                             id=track['id'],
+                                            artist=track['artist'],
+                                            name=track['name'],
                                             danceability=f['danceability'],
                                             instrumentalness=f['instrumentalness'],
                                             energy=f['energy'],
@@ -53,18 +52,17 @@ def get_tracks_with_features(tracks: list, sp: spotipy.Spotify) -> list:
 
 
 def get_all_tracks_from_playlists(username: str, sp: spotipy.Spotify) -> list:
-    """saves %s_music.csv a collection of all songs with feature data"""
     print('...getting all tracks from playlists')
     playlists = sp.user_playlists(username)
     trackList = []
     for playlist in playlists['items']:
         if playlist['owner']['id'] == username:
-            print(playlist['name'], ' no. of tracks: ', playlist['tracks']['total'])
+            # print(playlist['name'], ' no. of tracks: ', playlist['tracks']['total'])
             results = sp.user_playlist(username, playlist['id'], fields="tracks,next")
             tracks = results['tracks']
             for i, item in enumerate(tracks['items']):
                 track = item['track']
-                trackList.append(dict(name=track['name'], id=track['id'], artist=track['artists'][0]['name']))
+                trackList.append(dict(id=track['id'], artist=track['artists'][0]['name'], name=track['name']))
     return trackList
 
 
@@ -84,7 +82,7 @@ def get_top_artists(sp: spotipy.Spotify, amount: int = 20) -> list:
     return artists_uri
 
 
-def get_top_and_similar_artists(sp: spotipy.Spotify, amount: int = 20) -> list:
+def get_top_and_similar_artists(sp: spotipy.Spotify, amount: int = 30) -> list:
     """compiles a list of top and similar artists of length amount"""
     print('...getting top and similar artists')
     artists_name = []
@@ -108,16 +106,14 @@ def get_top_and_similar_artists(sp: spotipy.Spotify, amount: int = 20) -> list:
 
 
 def get_artists_top_tracks(sp: spotipy.Spotify, artists_uri: list, amount: int = 50) -> list:
-    """compiles unordered list of top tracks made by artists in artists_uri of length amount"""
+    # compiles list of top tracks made by artists in artists_uri of length amount
     print('...getting top tracks for each artist')
     tracks = []
     for artist in artists_uri:
         all_top_tracks_data = sp.artist_top_tracks(artist)
         top_tracks_data = all_top_tracks_data['tracks']
         for track_data in top_tracks_data:
-            tracks.append(track_data)
-    random.shuffle(tracks)
-    tracks = tracks[0:amount]
+            tracks.append(dict(id=track_data['id'], artist=track_data['artists'][0]['name'], name=track_data['name']))
     return tracks
 
 
@@ -130,11 +126,17 @@ def create_playlist(sp: spotipy.Spotify, tracks: list, playlist_name: str, amoun
     playlist_id = sp.user_playlist_create(user_id, playlist_name)["id"]
     random.shuffle(tracks)
     tracks_uri = []
-    for track in tracks[0:amount]:
-        tracks_uri.append(track['id'])
+    for track in tracks:
+        tracks_uri.append(track)
     sp.user_playlist_add_tracks(user_id, playlist_id, tracks_uri)
     print('playlist, {}, has been generated.'.format(playlist_name))
     return sp.playlist(playlist_id)["external_urls"]["spotify"]
+
+    # for track in tracks[0:amount]:
+    #    tracks_uri.append(track['id'])
+    # sp.user_playlist_add_tracks(user_id, playlist_id, tracks_uri)
+    # print('playlist, {}, has been generated.'.format(playlist_name))
+    # return sp.playlist(playlist_id)["external_urls"]["spotify"]
 
 
 def write_to_csv(track_features):
@@ -142,6 +144,80 @@ def write_to_csv(track_features):
     df.drop_duplicates(subset=['name', 'artist'])
     print('Total tracks in data set', len(df))
     df.to_csv('mySongsDataSet.csv', index=False)
+
+
+def show_tracks(tracks):
+    for i, item in enumerate(tracks['items']):
+        track = item['track']
+        print("   %d %32.32s %s" % (i, track['artists'][0]['name'],
+            track['name']))
+
+
+def get_recent_tracks(username: str, sp: spotipy.Spotify) -> list:
+    print('...getting the recent tracks from a user')
+    ret = []
+    # afterTime = time.time()
+    # afterTime = afterTime - 2629743  #one month ago
+    # afterTime = afterTime - 604800 #one week ago
+    # afterTime = math.floor(afterTime)
+    recent_tracks = sp.current_user_recently_played()
+    for item in recent_tracks['items']:
+        track = item['track']
+        ret.append(dict(id=track['id'], artist=track['artists'][0]['name'], name=track['name']))
+    return ret
+
+
+def get_recent_artists(username: str, sp: spotipy.Spotify) -> list:
+    print('...getting the artists from recent user songs played')
+    artists_uri = []
+    recent_artists = sp.current_user_recently_played()
+    for item in recent_artists['items']:
+        track = item['track']
+        for artist in track['artists']:
+            if artist['uri'] not in artists_uri:
+                artists_uri.append(artist['uri'])
+    return artists_uri
+
+
+def get_all_songs(username: str, sp: spotipy.Spotify) -> list:
+    # Method which gets songs from library, playlists, and top artists and similar artists into 1 dict
+    print("Getting tracks from library...")
+    trackList = [] # returning list
+    # get all songs from playlists
+    playlists = get_all_tracks_from_playlists(username, sp)
+    # get all songs from library AKA trackList
+    trackList = get_library(username, sp)
+    # merge playlists with library tracks
+    trackList = merge_dicts(playlists, trackList)
+    # get all songs from top artists and similar artists
+    preferences = get_artists_top_tracks(sp, get_top_and_similar_artists(sp))
+    trackList = merge_dicts(preferences, trackList)
+    # NOT WORKING! get all recent songs
+    recents = get_recent_tracks(username, sp)
+    trackList = merge_dicts(recents, trackList)
+    # NOT WORKING! get top tracks from recently played artists
+    recentArtists = get_recent_artists(username, sp)
+    recentArtists = get_artists_top_tracks(sp, recentArtists)
+    trackList = merge_dicts(recentArtists, trackList)
+    return trackList
+
+
+def merge_dicts(list1: list, list2: list) -> list:
+    # append two dictionaries together
+    for item in list1:
+        if item not in list2:
+            list2.append(item)
+    return list2
+
+
+def get_library(username: str, sp: spotipy.Spotify) -> list:
+    print("Getting tracks from user library..")
+    trackList = []
+    library = sp.current_user_saved_tracks()
+    for item in library['items']:
+        track = item['track']
+        trackList.append(dict(id=track['id'], artist=track['artists'][0]['name'], name=track['name']))
+    return trackList
 
 
 """

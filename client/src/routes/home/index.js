@@ -38,7 +38,7 @@ export default class Home extends Component {
     render() {
         return (
         <div class={`${style.home} page`}>
-            <h1>Sign in</h1>
+            <h1>Link Accounts</h1>
             <AuthCard changeToken = {this.onTokenChange.bind(this)}/>
             {this.state.spotify_token &&
             <TwitterCard changeUsername={this.onUsernameChange.bind(this)}/>
