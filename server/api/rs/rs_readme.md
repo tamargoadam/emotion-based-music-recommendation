@@ -1,5 +1,10 @@
 # Music Recommendation System Files
 
+## Assumptions
+    Once a spotify account is linked, its linked.
+    Once a twitter name is connected, the only way to switch to another is by refreshing the page and starting the process over.
+    
+
 ## RS.py
 ## Following the Flow:
 ##### playlist_rs(feature_data, tones, per_song, num_song)

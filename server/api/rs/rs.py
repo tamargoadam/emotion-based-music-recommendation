@@ -32,7 +32,6 @@ def rs_playlist(twitter_name: str, spotify_name: str, num_songs: int):
     feature_data = spotify.get_tracks_with_features(feature_data, sp) #spotify.
 """
 
-
 def playlist_rs(feature_data, tones, per_song, num_songs):
     # list of track ids to be added to a playlist at the end of the algorithm
     playlist_tracks = []  
@@ -44,6 +43,16 @@ def playlist_rs(feature_data, tones, per_song, num_songs):
     all_tracks = df.copy() 
     all_tracks = all_tracks.drop(['speechiness','instrumentalness','liveness','acousticness','name','artist','loudness','tempo','danceability'], axis=1)
     all_tracks = all_tracks.sample(frac=1).reset_index(drop=True)
+
+    # Check if tones is an empty dict and per_song is an empty dict
+    if len(tones) == 0 or len(per_song) == 0: 
+        # Lets return a list of playlist tracks that are just random 
+        while len(playlist_tracks) < num_songs:
+            temp_song = all_tracks.at[0, 'id']
+            if temp_song not in playlist_tracks:
+                playlist_tracks.append(temp_song)
+                all_tracks.drop(0)
+                all_tracks = all_tracks.sample(frac=1).reset_index(drop=True)        
 
     # joy_tracks
     joy_tracks = df.copy()
@@ -184,9 +193,16 @@ def playlist_rs(feature_data, tones, per_song, num_songs):
     
 def get_tones(username: str) -> dict:
     """generate list of sentiments corresponding to user's tweets"""
-    tweet_data = twitter.get_all_tweets(username)
-    sentiment_data = watson.get_sentiment(tweet_data) #watson. twitter.
-    sentiment_data = watson.format_sentiment(sentiment_data) #watson.
+    tweet_data = twitter.get_all_tweets(username) # returns a list of users most recent 200 tweets, includes retweets
+    empty_dict = {}
+    if len(tweet_data) == 0:    # an empty list of tweets was gathered, the twitter account doesnt have any tweets.
+        return empty_dict
+    sentiment_data = watson.get_sentiment(tweet_data) # returns a dictionary of sentiment analysis objects from watson
+    print("LENGTH")
+    print(len(sentiment_data))
+    sentiment_data = watson.format_sentiment(sentiment_data) # returns a dictionary of ONLY the document tones, COULD BE EMPTY
+    if len(sentiment_data) == 0:    # If the dictionary is empty lets just return an empty dictionary
+        return empty_dict
     sentiment_data = watson.sort_tones(sentiment_data)
     return sentiment_data
 
@@ -200,11 +216,18 @@ def adjust_songs(tone_in: dict, nums: int) -> dict:
     length = len(tone_in)
     song_num = nums
 
-    count = 0
-    div = 0
-    if 'joy' in tone_in.keys():
-        temp_joy = tone_in['joy']
-        count = count + 1
+    # Check if tone_in is an empty dictionary
+    if length == 0:
+        empty_dict = {}
+        return empty_dict
+        # return an empty dictionary in case length of tone_in is 0
+
+    # Otherwise continue to check which tones are in the dictionary 
+    count = 0 
+    div = 0 
+    if 'joy' in tone_in.keys():   # count each tone found
+        temp_joy = tone_in['joy'] # set = to temporary values to manipulate tone scores
+        count = count + 1         # increment count because we found a tone
     if 'anger' in tone_in.keys():
         temp_anger = tone_in['anger']
         count = count + 1
@@ -215,22 +238,22 @@ def adjust_songs(tone_in: dict, nums: int) -> dict:
         temp_calm = tone_in['calm']
         count = count + 1
 
-    if count > 0:
-        div = 1 / count
+    if count > 0:           
+        div = 1 / count # if there are multiple tones we need the ratio of div = (1/# of tones)
     else: 
-        div = 1
-    sum1 = 0
+        div = 1 # otherwise div = 1
     
+    sum1 = 0
     list_vals = [0, 0, 0, 0]
-    # joy, anger, sad, calm
+    # joy, anger, sad, calm,  order matters!
     
     # getsum1
-    if temp_joy > 0:
-        temp_joy *= song_num
-        temp_joy *= div
-        temp_joy = math.floor(temp_joy)
-        list_vals[0] = temp_joy
-        sum1 += temp_joy
+    if temp_joy > 0:                    # if the temp value has been set
+        temp_joy *= song_num            # multiply the score by the number of total songs in end playlist
+        temp_joy *= div                 # multiply by div ratio
+        temp_joy = math.floor(temp_joy) # get floor of this float
+        list_vals[0] = temp_joy         # set the joy value in list to the new temp_joy value calculated
+        sum1 += temp_joy                # keep track of the sum1 variable, tracking if we have met the total number of songs in final playlist
     if temp_anger > 0:
         temp_anger *= song_num
         temp_anger *= div
@@ -249,33 +272,37 @@ def adjust_songs(tone_in: dict, nums: int) -> dict:
         temp_calm = math.floor(temp_calm)
         list_vals[3] = temp_calm
         sum1 += temp_calm
-    
-    # show_vals(temp_sad, temp_joy, temp_anger, temp_calm)
-    
-    # showing vals for testing
-    # for i in list_vals:
-       # print(i)
         
-    # sum1 vs song_num
-    if sum1 < song_num:
-        while sum1 < song_num:
+    # (MOST LIKELY COMPARISON SCENARIO) 
+    # sum1 < song_num
+    if sum1 < song_num:                     # if the sum1 calculated above is less than the desired song_num 
+        while sum1 < song_num:              # loop to increment only calculated (tones > 0)
             for i in range(len(list_vals)):
-                if list_vals[i] == 0:
-                    i += 1
+                if list_vals[i] == 0:       # if the value in the list is 0 then we don't want to add an extra song of this type to the final playlist
+                    i += 1                  # increment our loop
                 else:
-                    list_vals[i] = list_vals[i] + 1
+                    list_vals[i] = list_vals[i] + 1     # if the value in list_vals[i] isn't 0 then we should increment
                     sum1 += 1
-    # highly unlikely sum1 > song_num
-    if sum1 > song_num:
-        print("ERROR: Exception, account for this case")
-    
-    # showing vals for testing
-    # for i in list_vals:
-        #print(i)
-        
-    # list_val[joy, anger, sad, calm]
+    # This else if scenario is unlikely to execute, but it is here in case of this scenario.
+    elif sum1 > song_num: 
+        if list_vals[0] == 0 and list_vals[1] == 0 and list_vals[2] == 0 and list_vals[3] == 0:
+            # if every value in this list is somehow 0, then lets just return an empty dictionary
+            empty_dict = {}
+            return empty_dict
+        else:
+            # sum1 > song_num
+            while sum1 > song_num:
+                for i in range(len(list_vals)):
+                    if list_vals[i] == 0:
+                        i += 1
+                    elif list_vals[i] > 1:
+                        list_vals[i] = list_vals[i] - 1 # decrement the values
+                        sum1 -= 1
+                        # while loop stops execution once sum1 = song_num
+     
+    # list_val = [number_of_joy_songs, number_of_anger_songs, number_of_sad_songs, number_of_calm_songs]
     ret_dic = tone_in.copy()
-      
+    
     # update the output dictionary with new values
     if 'joy' in ret_dic.keys():
         ret_dic['joy'] = list_vals[0]
