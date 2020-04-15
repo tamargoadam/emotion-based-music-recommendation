@@ -18,21 +18,24 @@ export default class PlaylistCard extends Component {
             spotify_token: props.spotify_token,
             playlist_name: "",
             num_songs: 50,
-            playlist_url: ""
+            playlist_url: "",
+            loading_playlist: false
         };
     }
 
     toggleButtonState = () => {
         if(this.state.playlist_name && this.state.num_songs) {
+            this.setState({loading_playlist: true})
             fetch(getPlaylistPath(this.state.twitter_username, this.state.spotify_token, this.state.playlist_name, this.state.num_songs))
                 .then(function (response) {
                     return response.text();
                 })
                 .then(data =>
-                    this.setState({playlist_url: data})
+                    this.setState({playlist_url: data, loading_playlist: false})
                 )
                 .catch(function (error) {
                     console.log(error);
+                    this.setState({loading_playlist: false})
                 });
         }
         else {
@@ -66,7 +69,8 @@ export default class PlaylistCard extends Component {
                 </div>
                 {!this.state.playlist_url &&
                 <Button raised ripple onClick={this.toggleButtonState.bind(this)}>
-                    Create my playlist
+                    {!this.state.loading_playlist && "Create my playlist"}
+                    {this.state.loading_playlist && "Creating your playlist. Please wait..."}
                 </Button>
                 }
                 {this.state.playlist_url &&
