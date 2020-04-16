@@ -41,7 +41,10 @@ def playlist():
     playlist_name = request.args.get('name')
     num_songs = request.args.get('songs')
     num_songs = int(num_songs) # We want num_songs to be in range (25-100)
-
+    if num_songs < 25:
+        num_songs = 25
+    elif num_songs > 100:
+        num_songs = 100
     # Getting Spotify Data
     sp = spotify.authenticate_spotify(spotify_token)
     username = sp.me()['id']

@@ -10,13 +10,6 @@ def random_rs(feature_data, num_songs):
     # Lets create a user playlist of random songs 
     playlist_tracks = []
     
-    # Lets keep the playlist size range between 25-100
-    tot_songs = num_songs
-    if tot_songs < 25:
-        tot_songs = 25
-    elif tot_songs > 100:
-        tot_songs = 100
-    
     # using pandas dataframe to manipulate songs
     df = pd.DataFrame.from_dict(feature_data)
 
@@ -26,7 +19,7 @@ def random_rs(feature_data, num_songs):
     all_tracks = all_tracks.sample(frac=1).reset_index(drop=True)
     
     count1 = 0
-    while count1 < tot_songs:
+    while count1 < num_songs:
         temp_song = all_tracks.at[0, 'id']
         if temp_song not in playlist_tracks:
             playlist_tracks.append(temp_song)
@@ -45,9 +38,7 @@ def joy_rs(feature_data, num_songs):
 
     # Lets keep the playlist size range between 25-50 
     tot_songs = num_songs
-    if tot_songs < 25:
-        tot_songs = 25
-    elif tot_songs > 50:
+    if tot_songs > 50:
         tot_songs = 50
 
     # using pandas dataframe to manipulate songs
@@ -96,9 +87,7 @@ def anger_rs(feature_data, num_songs):
 
     # Lets keep the playlist size range between 25-50 
     tot_songs = num_songs
-    if tot_songs < 25:
-        tot_songs = 25
-    elif tot_songs > 50:
+    if tot_songs > 50:
         tot_songs = 50
 
     # using pandas dataframe to manipulate songs
@@ -147,9 +136,7 @@ def sad_rs(feature_data, num_songs):
 
     # Lets keep the playlist size range between 25-50 
     tot_songs = num_songs
-    if tot_songs < 25:
-        tot_songs = 25
-    elif tot_songs > 50:
+    if tot_songs > 50:
         tot_songs = 50
 
     # using pandas dataframe to manipulate songs
@@ -198,9 +185,7 @@ def calm_rs(feature_data, num_songs):
 
     # Lets keep the playlist size range between 25-50 
     tot_songs = num_songs
-    if tot_songs < 25:
-        tot_songs = 25
-    elif tot_songs > 50:
+    if tot_songs > 50:
         tot_songs = 50
 
     # using pandas dataframe to manipulate songs
@@ -245,13 +230,6 @@ def calm_rs(feature_data, num_songs):
 def playlist_rs(feature_data, tones, per_song, num_songs):
     # list of track ids to be added to a playlist at the end of the algorithm
     playlist_tracks = []  
-
-     # Lets keep the playlist size range between 25-100
-    tot_songs = num_songs
-    if tot_songs < 25:
-        tot_songs = 25
-    elif tot_songs > 100:
-        tot_songs = 100
 
     # using pandas dataframe to manipulate songs
     df = pd.DataFrame.from_dict(feature_data)
@@ -320,7 +298,7 @@ def playlist_rs(feature_data, tones, per_song, num_songs):
 
     # loop, only decrementing the counter when a song is added to playlist__tracks list of ids
     count1 = 0
-    while(count1 < tot_songs):
+    while(count1 < num_songs):
         for i in range(len(tone_scores)):               # repeatedly loop through each song type
             if songs_per_tone[i] == 0:                  # no songs to add of this emotion
                 i += 1                                  # skip to next song type in list
