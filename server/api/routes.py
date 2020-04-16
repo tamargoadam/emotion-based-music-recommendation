@@ -41,28 +41,32 @@ def playlist():
     playlist_name = request.args.get('name')
     num_songs = request.args.get('songs')
     num_songs = int(num_songs) # We want num_songs to be in range (25-100)
-    # CHECK IF NUM_SONGS IS IN RANGE 25-100
-    
-    # Sentiment Analysis
-    tones = rs.get_tones(twitter_username)  # Call 1 -> document tones
-        # if tones returns an empty dictionary it will be accounted for in playlist_rs() function call
-    per_song = rs.adjust_songs(tones, num_songs) # Call 2 -> songs per tone to be put in final playlist
-        # if tones returns an empty dictionary, so will per_song
 
     # Getting Spotify Data
     sp = spotify.authenticate_spotify(spotify_token)
     username = sp.me()['id']
-    song_data = spotify.get_all_songs(username, sp) # Call 3 -> Get all songs from a user's spotify account
+    song_data = spotify.get_all_songs(username, sp) # Call -> Get all songs from a user's spotify account
                                                     # Top Artist Tracks, Top Similiar Artist Tracks, Recent Tracks (Last 3-7 days?),
                                                     # Get saved songs from User's Library, Get saved tracks within a users saved playlists
-    song_data = spotify.get_tracks_with_features(song_data, sp) # Call 4 -> get the feature data for each song 
+    song_data = spotify.get_tracks_with_features(song_data, sp) # Call -> get the feature data for each song 
                                                                 # PROBLEM: Efficiency of this call is O(N)
                                                                 # It gets feature data 1 song at a time from song_data
                                                                 # SOLUTION: https://developer.spotify.com/documentation/web-api/reference/tracks/get-several-audio-features/
 
-    # List of Track ID's
-    song_data = rs.playlist_rs(song_data, tones, per_song, num_songs) # Call 5 -> playlist_rs() performs the arrangement of songs into the final playlist
-    playlist = spotify.create_playlist(sp, song_data, playlist_name) # Call 6 -> Save the playlist in the user's spotify library.
+    # Sentiment Analysis
+    tones = rs.get_tones(twitter_username)          # Call -> document tones
+    per_song = rs.adjust_songs(tones, num_songs)    # Call -> songs per tone to be put in final playlist
+    
+    # RS Playlist generation algorithm call
+    if len(tones) == 0 or len(per_song) == 0:
+        # Then lets call the random_rs() playlist
+        song_data = rs.random_rs(song_data, num_songs)
+        playlist = spotify.create_playlist(sp, song_data, playlist_name)
+        print("Generated random playlist due to insufficient sentiment data from twitter account")
+    else:
+        # Then there is sentiment data
+        song_data = rs.playlist_rs(song_data, tones, per_song, num_songs) # Call -> playlist_rs() performs the arrangement of songs into the final playlist
+        playlist = spotify.create_playlist(sp, song_data, playlist_name) # Call -> Save the playlist in the user's spotify library.
     
     response = Response(playlist, 201)
     response.headers['Access-Control-Allow-Origin'] = '*'

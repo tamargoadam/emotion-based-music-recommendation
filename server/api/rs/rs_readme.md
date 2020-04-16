@@ -3,12 +3,32 @@
 ## Assumptions
     Once a spotify account is linked, its linked.
     Once a twitter name is connected, the only way to switch to another is by refreshing the page and starting the process over.
-    
+
 
 ## RS.py
 ## Following the Flow:
 ##### playlist_rs(feature_data, tones, per_song, num_song)
-    Returns a list of track ids to be used to create a playlist from the recommendation algorithm
+    Mapping sentiment scores to valence and energy feature data. This is our main recommendation algorithm
+    Returns a list of track ids
+
+##### random_rs(feature_data, num_song)
+    Generates a random playlist based on the user's spotify data.
+    Returns list of track ids.
+
+##### joy_rs(feature_data, num_song)
+    Generates a mini playlist of joyful songs. 
+    The playlist size can be anywhere between 25-50 songs.
+    Joyful songs are selected based on the spotify feature data.
+    Returns a list of track ids.
+
+##### anger_rs(feature_data, num_song)
+    Mini playlist for angry songs.
+
+##### sad_rs(feature_data, num_song)
+    Mini playlist for sad songs.
+
+##### calm_rs(feature_data, num_song)
+    Mini playlist for calm songs.
     
 ##### rs(twitter_name, spotify_name, num_songs) 
     Performs sentiment analysis of user's most recent 200 tweets.
