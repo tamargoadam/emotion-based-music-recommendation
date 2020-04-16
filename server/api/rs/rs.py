@@ -5,32 +5,6 @@ import math
 
 
 # RS.py
-# rs(twitter_name, spotify_name, num_songs)
-#   returns a list of song ids to be used for populating a new playlist
-#   rs func
-""" 
-def rs_playlist(twitter_name: str, spotify_name: str, num_songs: int):
-    # Method to call when a user needs a new playlist created based on the number of songs as input
-    
-    #sentiment scores
-    tones = get_tones(twitter_name) # {'joy': 0.617353, 'anger': 0.542552}
-    #tones = watson.sort_tones(tones)
-    #print(tones)
-    #songs per emotion to be added to playlist
-    per_song = adjust_songs(tones, num_songs) # {'anger': 24, 'joy': 26}
-    
-    #get spotify auth
-    scope = 'user-library-read user-top-read playlist-modify-public user-follow-read'
-    redirect_uri = 'https://localhost:8000/callback'
-    token = spotify.get_user_token(spotify_name, scope, redirect_uri) #spotify.
-    if token:
-        print('Success, got spotify token')
-    else:
-        print("Cant get token for ", spotify_name)
-    sp = spotify.authenticate_spotify(token) #spotify.
-    feature_data = spotify.get_all_songs(spotify_name, sp) #spotify.
-    feature_data = spotify.get_tracks_with_features(feature_data, sp) #spotify.
-"""
 
 def random_rs(feature_data, num_songs):
     # Lets create a user playlist of random songs 
@@ -271,7 +245,14 @@ def calm_rs(feature_data, num_songs):
 def playlist_rs(feature_data, tones, per_song, num_songs):
     # list of track ids to be added to a playlist at the end of the algorithm
     playlist_tracks = []  
-    
+
+     # Lets keep the playlist size range between 25-100
+    tot_songs = num_songs
+    if tot_songs < 25:
+        tot_songs = 25
+    elif tot_songs > 100:
+        tot_songs = 100
+
     # using pandas dataframe to manipulate songs
     df = pd.DataFrame.from_dict(feature_data)
 
@@ -339,7 +320,7 @@ def playlist_rs(feature_data, tones, per_song, num_songs):
 
     # loop, only decrementing the counter when a song is added to playlist__tracks list of ids
     count1 = 0
-    while(count1 < num_songs):
+    while(count1 < tot_songs):
         for i in range(len(tone_scores)):               # repeatedly loop through each song type
             if songs_per_tone[i] == 0:                  # no songs to add of this emotion
                 i += 1                                  # skip to next song type in list
