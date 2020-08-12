@@ -1,7 +1,7 @@
 from flask import Flask, request, Response
 from endpoints.twitter import twitter
 from endpoints.spotify import spotify
-from rs import rs
+from rs import rs, sentiment
 
 
 app = Flask(__name__)
@@ -36,44 +36,42 @@ def get_twitter_username():
 
 @app.route('/playlist')
 def playlist():
+    """Main playlist creation route. This route when given the proper parameters will call the necessary functions from the Spotify, Twitter and Watson API's to 
+    follow the steps of the recommendation algorithm. """
     twitter_username = request.args.get('user')
     spotify_token = request.args.get('token')
     playlist_name = request.args.get('name')
-    num_songs = request.args.get('songs')
-    num_songs = int(num_songs) # We want num_songs to be in range (25-100)
-    if num_songs < 25:
-        num_songs = 25
-    elif num_songs > 100:
-        num_songs = 100
-    # Getting Spotify Data
+    num_songs = 50
+    
     sp = spotify.authenticate_spotify(spotify_token)
+    
     username = sp.me()['id']
-    song_data = spotify.get_all_songs(username, sp) # Call -> Get all songs from a user's spotify account
-                                                    # Top Artist Tracks, Top Similiar Artist Tracks, Recent Tracks (Last 3-7 days?),
-                                                    # Get saved songs from User's Library, Get saved tracks within a users saved playlists
-    song_data = spotify.get_tracks_with_features(song_data, sp) # Call -> get the feature data for each song 
-                                                                # PROBLEM: Efficiency of this call is O(N)
-                                                                # It gets feature data 1 song at a time from song_data
-                                                                # SOLUTION: https://developer.spotify.com/documentation/web-api/reference/tracks/get-several-audio-features/
+    
+    data = spotify.get_all_songs(username, sp)
+    
+    data = spotify.get_music_features(data, sp)
 
-    # Sentiment Analysis
-    tones = rs.get_tones(twitter_username)          # Call -> document tones
-    per_song = rs.adjust_songs(tones, num_songs)    # Call -> songs per tone to be put in final playlist
+    emotions = sentiment.get_sentiment(twitter_username)   
+
+    per_song = sentiment.adjust_songs(emotions, num_songs)
+
+    playlist = rs.playlist_rs(data, emotions, per_song, num_songs)  
+
+    playlist = spotify.create_playlist(sp, playlist, playlist_name)
     
-    # RS Playlist generation algorithm call
-    if len(tones) == 0 or len(per_song) == 0:
-        # Then lets call the random_rs() playlist
-        song_data = rs.random_rs(song_data, num_songs)
-        playlist = spotify.create_playlist(sp, song_data, playlist_name)
-        print("Generated random playlist due to insufficient sentiment data from twitter account")
+    if playlist:
+        response = Response(playlist, 201)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
+    elif error:
+        response = Response(Exception, 500)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
     else:
-        # Then there is sentiment data
-        song_data = rs.playlist_rs(song_data, tones, per_song, num_songs) # Call -> playlist_rs() performs the arrangement of songs into the final playlist
-        playlist = spotify.create_playlist(sp, song_data, playlist_name) # Call -> Save the playlist in the user's spotify library.
-    
-    response = Response(playlist, 201)
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    return response
+        response = Response('Not Found', 404)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        return response
+        
 
 
 if __name__ == "__main__":
