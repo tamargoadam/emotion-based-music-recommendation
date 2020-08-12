@@ -17,16 +17,15 @@ export default class PlaylistCard extends Component {
             twitter_username: props.twitter_username,
             spotify_token: props.spotify_token,
             playlist_name: "",
-            num_songs: 50,
             playlist_url: "",
             loading_playlist: false
         };
     }
 
     toggleButtonState = () => {
-        if(this.state.playlist_name && this.state.num_songs) {
+        if(this.state.playlist_name) {
             this.setState({loading_playlist: true})
-            fetch(getPlaylistPath(this.state.twitter_username, this.state.spotify_token, this.state.playlist_name, this.state.num_songs))
+            fetch(getPlaylistPath(this.state.twitter_username, this.state.spotify_token, this.state.playlist_name))
                 .then(function (response) {
                     return response.text();
                 })
@@ -39,7 +38,7 @@ export default class PlaylistCard extends Component {
                 });
         }
         else {
-            alert("Please enter a name for your playlist, or a number for the amount of songs.")
+            alert("Please enter a name for your playlist.")
         }
     }
 
@@ -58,15 +57,7 @@ export default class PlaylistCard extends Component {
                         }}
                     />
                 </div>
-                <div>
-                    <TextField defaultValue={50}class={style.textInput}label="Number of Songs (We recommend between 25-100)"
-                        onKeyUp={e => {
-                            this.setState({
-                                num_songs: e.target.value
-                            });
-                        }}
-                    />
-                </div>
+                
                 {!this.state.playlist_url &&
                 <Button raised ripple onClick={this.toggleButtonState.bind(this)}>
                     {!this.state.loading_playlist && "Create my playlist"}
