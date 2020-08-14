@@ -1,35 +1,65 @@
 # Emotion-Based Music Recommendation Docs
 
-## Getting Started Guide
-In order to use this service, you *must have __both__* the Backend and the Frontend server running. Additionally you will need to have set the environment variables in sample.env and rename the file to .env
-
-### To Start the Backend Server
-Flask is used as the backend server to serve particular routes for handling API requests. 
+## Getting Started - Clone and Setup
+- Have Python3 and NodeJS installed.
+- Acquire developer access keys to the following APIs: [Twitter][twitdev], [Spotify][spotdev], & [IBM-Watson][ibmdev]
+-Clone the repository into a new folder called 'ebmr', then move into the 'ebmr' folder and open the directory in your preferred editor
 ```
+git clone https://github.com/tamargoadam/emotion-based-music-recommendation ebmr
+cd ebmr
+code
+```
+- Change the environment variables in 'sample.env'  and rename the file to '.env'
+- Install pipenv and then use pipenv to install the requirements for this project. 
+```
+pip install pipenv
 pipenv install
-pipenv shell
-python server/api/routes.py
 ```
-
-### To Start the Frontend Server
-Preact is utilized as the JavaScript framework to render client side HTML. Preact is a lightweight alternative to React.
+- Move into the client server directory and then install the front-end dependencies.
 ```
 cd client
 npm install
+```
+
+## Running the Server
+- Within a terminal window, navigate to the project's root directory, 'ebmr'.
+- __Start the backend Flask server from within pipenv's shell virtual environment.__
+```
+pipenv shell
+python server/api/routes.py
+```
+- Open __a new__ terminal window, and navigate to the project's root directory.
+- Move into the client folder, and then run the front end server in development mode
+```
 npm run dev
 ```
 
-### Connect with API's and set the environment variables
-You will need to fill out the sample sample.env file with your own environment variables. In order to gain access to these variables you will have to setup a Spotify, Twitter and IBM-Watson developer account. 
-[Access the Twitter Developer Dashboard](https://developer.twitter.com/)
-[Create a new app on the Spotify Developer Dashboard](https://developer.spotify.com/)
-[Create an IBM-Watson Developer Account](https://cloud.ibm.com/registration?target=%2Fapidocs%2Ftone-analyzer)
+- At this point, you will now be able to access the service and create playlists from [localhost:8080/][localhost]
 
-### Read the API documentations
-[Learn how to use Spotipy](https://spotipy.readthedocs.io/)
-[Learn how to use Tweepy](http://docs.tweepy.org/en/latest/)
-[Learn more about IBM-Watson's Tone Analyzer](https://cloud.ibm.com/apidocs/tone-analyzer)
+## Check your Pipfile
+- Within Pipfile, alter the python version to match yours. 
+```
+[requires]
+python_version = "3.x"
+```
+
+### API & Framework Documentations
+- [Spotipy API][spotipy]
+- [Tweepy API][tweepy]
+- [IBM-Watson Tone Analyzer API][ibmwatson]
+- [Preact, 3kb lightweight alternative to React][preact]
 
 
 
 
+
+[repo]: https://github.com/tamargoadam/emotion-based-music-recommendation
+[twitdev]: https://developer.twitter.com/
+[spotdev]: https://developer.spotify.com/
+[ibmdev]: https://cloud.ibm.com/registration?target=%2Fapidocs%2Ftone-analyzer
+[spotipy]: https://spotipy.readthedocs.io/
+[tweepy]: http://docs.tweepy.org/en/latest/
+[ibmwatson]: https://cloud.ibm.com/apidocs/tone-analyzer
+[pipenv]: https://pipenv-fork.readthedocs.io/en/latest/
+[localhost]: http://localhost:8080/
+[preact]: https://preactjs.com/
